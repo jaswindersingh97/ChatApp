@@ -1,7 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import styles from './SignIn.module.css';
+import authApi from '../api/authApi';
 
 function SignIn() {
+  const endpoints = "/signin";
+  const [user, SetUser] = useState({
+    email: "",
+    password: ""
+  });
+
   const changeHandler = (e) => {
     const { name, value } = e.target;
     SetUser((prevData) => ({
@@ -10,15 +17,20 @@ function SignIn() {
     }));
   };
 
-  const [user, SetUser] = useState({
-    email: "",
-    password: ""
-  });
+  const apiHandler = async () => {
+    try {
+      const response = await authApi({ endpoints, user });
+      return response;
+    } catch (error) {
+      console.error("Error from API:", error);
+    }
+  };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    // Add your logic for sign-in, such as API requests or form validation
-    console.log("User data: ", user);
+    const {token} = await apiHandler();  // Wait for the API call to finish
+    console.log("Submit Response:", token);
+    localStorage.setItem("token","Bearer "+token);
   };
 
   return (
@@ -40,7 +52,7 @@ function SignIn() {
           onChange={changeHandler}
           placeholder='Password'
         />
-          <button type="submit">Login</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );

@@ -19,7 +19,7 @@ const signup = async (req, res) => {
         
         // Save the user in the database
         const response = await newUser.save();
-        res.status(201).json({ message: 'User signed up successfully', response: response });
+        res.status(201).json({ message: 'User signed up successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Error signing up user', error });
     }

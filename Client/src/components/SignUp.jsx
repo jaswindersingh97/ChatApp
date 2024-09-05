@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import styles from './SignUp.module.css';
-
+import authApi from '../api/authApi';
 function SignUp() {
+  const endpoints = "/signup";
   const [user, setUser] = useState({ name: "", email: "", password: "" });
   const [pass, setPass] = useState({ pass: "", confirmpass: "" });
 
-  const submitHandler = (e) => {
+  const submitHandler = async(e) => {
     e.preventDefault();
     
     if (pass.pass === pass.confirmpass) {
@@ -15,9 +16,21 @@ function SignUp() {
       }));
       // You can add more logic here, like making an API call or further validation
       alert("Form submitted successfully!");
-      console.log(user)
+      const response = await apiHandler();  // Wait for the API call to finish
+
+      console.log(response)
     } else {
       alert("Passwords do not match");
+    }
+  };
+
+  const apiHandler = async () => {
+    try {
+      const response = await authApi({ endpoints, user });
+      console.log("API Response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error from API:", error);
     }
   };
 
@@ -58,7 +71,6 @@ function SignUp() {
           onChange={handleInputChange}
           placeholder='Enter your Email'
         />
-        
         <p>Password</p>
         <input
           type='password'
