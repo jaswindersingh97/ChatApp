@@ -15,6 +15,7 @@ function SignUp() {
       }));
       // You can add more logic here, like making an API call or further validation
       alert("Form submitted successfully!");
+      console.log(user)
     } else {
       alert("Passwords do not match");
     }
@@ -39,6 +40,7 @@ function SignUp() {
   return (
     <div className={styles.container}>
       <form onSubmit={submitHandler}>
+      
         <p>Name:</p>
         <input
           type='text'
@@ -74,9 +76,7 @@ function SignUp() {
           onChange={handlePasswordChange}
           placeholder='Confirm Password'
         />
-        <div className={styles.button}>
         <button type="submit">Submit</button>
-        </div>
       </form>
     </div>
   );

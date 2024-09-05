@@ -40,9 +40,7 @@ function SignIn() {
           onChange={changeHandler}
           placeholder='Password'
         />
-        <div className={styles.button}>
           <button type="submit">Login</button>
-        </div>
       </form>
     </div>
   );

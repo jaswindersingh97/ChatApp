@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './HomePage.module.css';
-import SignIn from '../components/SignIn';
 import SignUp from '../components/SignUp';
+import SignIn from '../components/SignIn';
 function HomePage() {
     const [signForm,setSignForm]=useState(false);
   return (
@@ -12,8 +12,8 @@ function HomePage() {
             </div>
             <div className={styles.body}>
                 <div className={styles.pageSelector}>
-                    <button onClick={()=>setSignForm(true)}>Login</button>
-                    <button onClick={()=>setSignForm(false)}>Sign Up</button>
+                    <button onClick={()=>setSignForm(true)} className={signForm ?styles.active:styles.on}>Login</button>
+                    <button onClick={()=>setSignForm(false)} className={signForm ?styles.on:styles.active}>Sign Up</button>
                 </div>
                 <div className={styles.signForm}>
                     {
