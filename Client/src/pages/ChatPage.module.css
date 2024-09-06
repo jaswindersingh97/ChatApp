@@ -5,7 +5,8 @@
     background-color: aqua;
     flex-direction: column;
     box-sizing: border-box;
-}
+    overflow-x: hidden;
+    position: relative;}
 .header{
     background-color:tomato;
     display: flex;
@@ -43,6 +44,7 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 .right{
     display: flex;

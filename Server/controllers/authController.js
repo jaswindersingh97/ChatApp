@@ -61,4 +61,8 @@ const signin = async (req, res) => {
     }
 };
 
+const searchUser = async (req, res) => {
+    // /search/u=
+}
+
 module.exports = { signup, signin };
