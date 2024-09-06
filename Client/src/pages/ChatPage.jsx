@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from './ChatPage.module.css';
+import Dummy from '../components/dummy';
 function ChatPage() {
   return (
     <div className={styles.container}>
@@ -11,7 +12,13 @@ function ChatPage() {
       </div>
       <div className={styles.body}>
         <div className={styles.left}>
-            left
+            <div className={styles.leftheader}>
+              <p> MY CHATS</p>
+              <button>New Group chat +</button>
+            </div>
+            <div className={styles.leftbody}>
+              <Dummy number={1}/>
+            </div>
         </div>
         <div className={styles.right}>
             right

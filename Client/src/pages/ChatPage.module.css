@@ -27,6 +27,22 @@
     display: flex;
     width:30%;
     background: white;
+    flex-direction: column;
+}
+.leftheader{
+    display: flex;
+    height: 35px;
+    padding: 10px;
+    border: 1px,solid,black;
+    justify-content: space-between;
+    font-size: xx-large;
+}
+.leftbody{
+    padding: 15px;
+    gap:10px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 .right{
     display: flex;
