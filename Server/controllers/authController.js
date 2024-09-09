@@ -62,7 +62,34 @@ const signin = async (req, res) => {
 };
 
 const searchUser = async (req, res) => {
-    // /search/u=
-}
+    const { query } = req.body;
+    console.log(query);
+    
+    try {
+        if (!query) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-module.exports = { signup, signin };
+        // Search in both 'name' and 'email' fields using regex and case-insensitivity
+        const users = await User.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { email: { $regex: query, $options: 'i' } }
+            ]
+        });
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'No users found matching the query' });
+        }
+
+        const ids = users.map((item) => item._id);
+        res.status(200).json({ message: "Users found", users: ids });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error while searching user" });
+    }
+};
+
+
+
+module.exports = { signup, signin, searchUser };
