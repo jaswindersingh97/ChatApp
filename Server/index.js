@@ -1,6 +1,8 @@
 const express = require("express");
 const authRoutes = require('./Endpoints/AuthRoutes')
 const cors =require('cors');
+const SecureRoutes = require('./Endpoints/SecureRoutes');
+const AuthMiddleware = require('./Middleware/AuthMiddleware');
 const app=express();
 const connectDB = require('./config/db'); 
 require('dotenv').config();
@@ -16,6 +18,8 @@ app.get("/",(req,res)=>{
     res.send("helloworld")
 })
 app.use('/auth', authRoutes);
+
+app.use('/secureRoute',AuthMiddleware,SecureRoutes)
 
 app.listen(3000,()=>{
     console.log("server is running on port",3000)

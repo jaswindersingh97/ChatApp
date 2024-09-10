@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
         lowercase: true, // Converts the email to lowercase
     },
     password: {
+        select: false,
         type: String,
         required: true,
     },
