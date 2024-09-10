@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';  // You should store this in a secure place, like environment variables
 
 // Middleware function to authorize users
 const authorize = (req, res, next) => {
@@ -14,8 +15,7 @@ const authorize = (req, res, next) => {
 
   try {
     // Verify the token (assuming secretKey is your secret used to sign the token)
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
+    const decoded = jwt.verify(token, JWT_SECRET);
     // Attach the decoded user to the request object
     req.user = decoded;
 

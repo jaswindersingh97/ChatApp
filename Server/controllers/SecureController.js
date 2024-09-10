@@ -1,11 +1,12 @@
+const User = require('./../models/User');
 
 const searchUser = async (req, res) => {
-    const { query } = req.query; // Extract the query from URL parameters
-    console.log(query);
+    const { query } = req.query; // Extract the query from URL query string
     
     try {
+        // Validate the query parameter
         if (!query) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(400).json({ error: 'Query parameter is required' });
         }
 
         // Search in both 'name' and 'email' fields using regex and case-insensitivity
@@ -16,15 +17,36 @@ const searchUser = async (req, res) => {
             ]
         });
 
+        // Handle case when no users are found
         if (users.length === 0) {
-            return res.status(404).json({ error: 'No users found matching the query' });
+            return res.status(200).json({ message: 'No users found', users: [] });
         }
 
+        // Return the found users
         res.status(200).json({ message: "Users found", users });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Error while searching user" });
+        console.error('Error while searching users:', error);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
-module.exports = {searchUser};
+const Users = async (req, res) =>{
+    try {
+        
+        const users = await User.find();
+
+        // Handle case when no users are found
+        if (users.length === 0) {
+            return res.status(200).json({ message: 'No users found', users: [] });
+        }
+
+        // Return the found users
+        res.status(200).json({ message: "Users found", users });
+    } catch (error) {
+        console.error('Error while searching users:', error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+};
+
+module.exports = { searchUser ,Users };
