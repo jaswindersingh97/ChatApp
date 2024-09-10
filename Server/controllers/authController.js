@@ -45,7 +45,7 @@ const signin = async (req, res) => {
 
         // Generate a JWT token if the credentials are valid
         const token = jwt.sign(
-            { userId: user._id,
+            { _id: user._id,
               userName: user.name,  
                 email: user.email },  // Payload data
             JWT_SECRET,                               // Secret key
