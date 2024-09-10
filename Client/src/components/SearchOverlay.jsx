@@ -1,19 +1,69 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './SearchOverlay.module.css';
-import Dummy from './dummy';
+import SearchUsersApi from '../api/SearchUsersApi';
 
 function SearchOverlay({ closeSearch }) {
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]); // State to store search results
+  const [loading, setLoading] = useState(false); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [noUsers, setNoUsers] = useState(false); // State to handle no users found case
+
+  const token = localStorage.getItem("token");
+
+  const onbuttonClk = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Set loading to true when starting API call
+    setError(null); // Reset any previous error
+    setNoUsers(false); // Reset no users state
+    try {
+      const data = await SearchUsersApi({ token, search });
+      if (data.users && data.users.length > 0) {
+        setResults(data.users); // Assuming 'users' is the array in the response
+      } else {
+        setNoUsers(true); // If no users found
+        setResults([])
+      }
+    } catch (error) {
+      setError('Error fetching users');
+    } finally {
+      setLoading(false); // Set loading to false when the API call finishes
+    }
+  };
+
   return (
     <div className={styles.searchOverlay}>
       <div className={styles.searchContainerLeft}>
         <div className={styles.top}>
-        <input type="text" placeholder="Search..." className={styles.searchInput} />
-        <button>Search</button>
+          <form onSubmit={onbuttonClk}>
+            <input
+              type="text"
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+              placeholder="Search..."
+              className={styles.searchInput}
+            />
+            <button type="submit">Search</button> {/* Changed to button tag */}
+          </form>
         </div>
         <div className={styles.down}>
-            <Dummy number={10}/>
+          {/* Show loading spinner or message when loading */}
+          {loading && <p>Loading...</p>}
+
+          {/* Show error message if any error occurred */}
+          {error && <p className={styles.error}>{error}</p>}
+
+          {/* Show message when no users found */}
+          {noUsers && <p>No users found matching the query.</p>}
+
+          {/* Map through results and display users */}
+          {!loading && !error && results.length > 0 && results.map((item, index) => (
+            <div key={index} className={styles.element}>
+              <span>PP</span>
+              <p>{item.name}</p> {/* Assuming 'name' is a field in the user data */}
+            </div>
+          ))}
         </div>
-        {/* Your search content goes here */}
       </div>
       <div className={styles.searchContainerRight} onClick={closeSearch}>
         {/* Clicking this will close the search window */}
