@@ -45,7 +45,9 @@ const signin = async (req, res) => {
 
         // Generate a JWT token if the credentials are valid
         const token = jwt.sign(
-            { userId: user._id, email: user.email },  // Payload data
+            { userId: user._id,
+              userName: user.name,  
+                email: user.email },  // Payload data
             JWT_SECRET,                               // Secret key
             { expiresIn: '1h' }                       // Token expiration time (1 hour here)
         );
