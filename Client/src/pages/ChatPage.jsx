@@ -23,7 +23,7 @@ function ChatPage() {
 
   const getPrevChat = async () => {
     const token = localStorage.getItem("token");
-    console.log(token);
+    // console.log(token);
     const data = await getPrevChats({ token });
     SetPrevChats(data);
   };
