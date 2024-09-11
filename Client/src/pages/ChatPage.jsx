@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './ChatPage.module.css';
 import SearchOverlay from '../components/SearchOverlay'; 
 import getPrevChats from '../api/chatGroups';
+import Right from '../components/Right';
 
 function ChatPage() {
   useEffect(() => {
@@ -61,7 +62,10 @@ function ChatPage() {
             })}
           </div>
         </div>
-        <div className={styles.right}>right</div>
+        <div className={styles.right}>
+        select a chat
+        {/* <Right/> */}
+        </div>
       </div>
     </div>
   );
