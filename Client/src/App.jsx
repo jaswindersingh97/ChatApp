@@ -5,7 +5,7 @@ import ChatPage from './pages/ChatPage'
 function App() {
   return (
     <div>
-    <HomePage/>
+    {/* <HomePage/> */}
       <ChatPage/>
     </div>
   )

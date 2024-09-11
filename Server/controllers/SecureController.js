@@ -164,4 +164,54 @@ const renameGrp = async(req,res) =>{
         res.status(200).json(updatedChat);
     }
 }
-module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp};
+
+const addMembers = async (req, res) => {
+    try {
+      const { chatId, userId } = req.body;
+  
+      // Use await to ensure the operation completes before moving on
+      const added = await Chat.findByIdAndUpdate(
+        chatId,
+        { $push: { users: userId } }, // Add user to chat
+        { new: true } // Return the updated document
+      )
+        .populate("users") // Populate users array
+        .populate("groupAdmin"); // Populate group admin
+  
+      if (!added) {
+        return res.status(400).json({ message: "Chat not found" });
+      }
+  
+      // Send back the updated chat with added users
+      res.status(200).json(added);
+    } catch (error) {
+      res.status(500).json({ message: "Error adding members", error: error.message });
+    }
+  };
+  
+
+const removeMember = async(req,res) =>{
+    try {
+        const { chatId, userId } = req.body;
+    
+        // Use await to ensure the operation completes before moving on
+        const removed = await Chat.findByIdAndUpdate(
+          chatId,
+          { $pull: { users: userId } }, // Add user to chat
+          { new: true } // Return the updated document
+        )
+          .populate("users") // Populate users array
+          .populate("groupAdmin"); // Populate group admin
+    
+        if (!removed) {
+          return res.status(400).json({ message: "Chat not found" });
+        }
+    
+        // Send back the updated chat with added users
+        res.status(200).json(removed);
+      } catch (error) {
+        res.status(500).json({ message: "Error adding members", error: error.message });
+      }
+}
+
+module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp,addMembers,removeMember};

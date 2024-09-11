@@ -54,7 +54,7 @@ const signin = async (req, res) => {
 
         res.status(200).json({ 
             message: 'User signed in successfully', 
-            token: token   // Send the JWT token to the client
+            token: token,   // Send the JWT token to the client
         });
     } catch (error) {
         console.log(error);

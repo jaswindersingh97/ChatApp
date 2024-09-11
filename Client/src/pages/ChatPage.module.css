@@ -52,3 +52,20 @@
     background: white;
 
 }
+.ele{
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(153, 153, 153, 0.342);
+    border-radius: 10px;
+}
+.ele:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+.ele > div{
+    display: flex;
+    gap:10px;
+}
+.ele span{
+    font-weight: bold;
+}
