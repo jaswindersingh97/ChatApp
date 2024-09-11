@@ -28,9 +28,10 @@ function SignIn() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const {token} = await apiHandler();  // Wait for the API call to finish
+    const {token,id} = await apiHandler();  // Wait for the API call to finish
     console.log("Submit Response:", token);
     localStorage.setItem("token","Bearer "+token);
+    localStorage.setItem("id",id);
   };
 
   return (

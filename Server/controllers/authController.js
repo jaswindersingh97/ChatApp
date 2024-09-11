@@ -49,12 +49,13 @@ const signin = async (req, res) => {
               userName: user.name,  
                 email: user.email },  // Payload data
             JWT_SECRET,                               // Secret key
-            { expiresIn: '1h' }                       // Token expiration time (1 hour here)
+            { expiresIn: '3h' }                       // Token expiration time (1 hour here)
         );
 
         res.status(200).json({ 
             message: 'User signed in successfully', 
             token: token,   // Send the JWT token to the client
+            id: user._id
         });
     } catch (error) {
         console.log(error);

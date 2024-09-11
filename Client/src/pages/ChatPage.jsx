@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ChatPage.module.css';
-import Dummy from '../components/dummy';
-import SearchOverlay from '../components/SearchOverlay'; // Import the new component
+import SearchOverlay from '../components/SearchOverlay'; 
 import getPrevChats from '../api/chatGroups';
 
 function ChatPage() {
-  useEffect(()=>{
+  useEffect(() => {
     getPrevChat();
-  },[])
+  }, []);
 
-  const [prevChats,SetPrevChats] = useState([]);
+  const currentUserId = localStorage.getItem("id"); 
 
+  const [prevChats, SetPrevChats] = useState([]);
   const [searchVisible, setSearchVisible] = useState(false);
 
   const toggleSearch = () => {
@@ -21,12 +21,12 @@ function ChatPage() {
     setSearchVisible(false);
   };
 
-  const getPrevChat = async() =>{
-    const token = localStorage.getItem("token")
+  const getPrevChat = async () => {
+    const token = localStorage.getItem("token");
     console.log(token);
-    const data=await getPrevChats({token})
+    const data = await getPrevChats({ token });
     SetPrevChats(data);
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -44,23 +44,22 @@ function ChatPage() {
             <button>New Group chat +</button>
           </div>
           <div className={styles.leftbody}>
-          {
-            prevChats.map((item,index)=>{
-              return(
+            {prevChats.map((chat, index) => {
+              const otherUser = chat.users.find(user => user._id !== currentUserId); // Find the other user in one-on-one chat
+
+              return (
                 <div key={index} className={styles.ele}>
-                <h2>{item.chatName=="sender"?"hi":item.chatName}</h2>
-              <div>
-              <span>last Sender</span>
-              <p>last message</p>
-              </div> 
-            </div>
-              )
-              
-            })
-          }
+                  <h2>
+                    {chat.isGroupChat ? chat.chatName : (otherUser ? otherUser.name : "No Name")}
+                  </h2>
+                  <div>
+                    <span>{chat.latestMessage ? chat.latestMessage.sender.name : "No Sender"}</span>
+                    <p>{chat.latestMessage ? chat.latestMessage.content : "No messages yet"}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          {/* <Dummy number={5}/> */}
-          {/* {prevChats.length} */}
         </div>
         <div className={styles.right}>right</div>
       </div>

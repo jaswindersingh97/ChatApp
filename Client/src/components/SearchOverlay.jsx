@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './SearchOverlay.module.css';
 import SearchUsersApi from '../api/SearchUsersApi';
+import createChatApi from '../api/createChatApi';
 
 function SearchOverlay({ closeSearch }) {
   const [search, setSearch] = useState("");
@@ -11,7 +12,7 @@ function SearchOverlay({ closeSearch }) {
 
   const token = localStorage.getItem("token");
 
-  const onbuttonClk = async (e) => {
+  const onSearchClk = async (e) => {
     e.preventDefault();
     setLoading(true); // Set loading to true when starting API call
     setError(null); // Reset any previous error
@@ -31,11 +32,17 @@ function SearchOverlay({ closeSearch }) {
     }
   };
 
+  const onChatClk = async(item) =>{
+    const _id= item._id;
+      const response = await createChatApi({token,_id});
+      console.log(response);
+  }
+
   return (
     <div className={styles.searchOverlay}>
       <div className={styles.searchContainerLeft}>
         <div className={styles.top}>
-          <form onSubmit={onbuttonClk}>
+          <form onSubmit={onSearchClk}>
             <input
               type="text"
               onChange={(e) => setSearch(e.target.value)}
@@ -58,7 +65,7 @@ function SearchOverlay({ closeSearch }) {
 
           {/* Map through results and display users */}
           {!loading && !error && results.length > 0 && results.map((item, index) => (
-            <div key={index} className={styles.element}>
+            <div key={index} onClick={()=>onChatClk(item)} className={styles.element}>
               <span>PP</span>
               <p>{item.name}</p> {/* Assuming 'name' is a field in the user data */}
             </div>
