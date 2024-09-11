@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styles from './SignIn.module.css';
 import authApi from '../api/authApi';
-
+import { useNavigate } from 'react-router-dom';
 function SignIn() {
+  const navigate = useNavigate();
   const endpoints = "/signin";
   const [user, SetUser] = useState({
     email: "",
@@ -32,6 +33,7 @@ function SignIn() {
     console.log("Submit Response:", token);
     localStorage.setItem("token","Bearer "+token);
     localStorage.setItem("id",id);
+    navigate("/chatpage");
   };
 
   return (
