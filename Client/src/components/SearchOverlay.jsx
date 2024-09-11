@@ -36,6 +36,7 @@ function SearchOverlay({ closeSearch }) {
     const _id= item._id;
       const response = await createChatApi({token,_id});
       console.log(response);
+      closeSearch();
   }
 
   return (

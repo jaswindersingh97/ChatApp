@@ -5,14 +5,17 @@ import getPrevChats from '../api/chatGroups';
 import Right from '../components/Right';
 
 function ChatPage() {
-  useEffect(() => {
-    getPrevChat();
-  }, []);
-
+  const [searchVisible, setSearchVisible] = useState(false);
+  
+  
   const currentUserId = localStorage.getItem("id"); 
 
   const [prevChats, SetPrevChats] = useState([]);
-  const [searchVisible, setSearchVisible] = useState(false);
+
+  useEffect(() => {
+      getPrevChat();
+  }, [searchVisible]);
+
 
   const toggleSearch = () => {
     setSearchVisible(!searchVisible);
