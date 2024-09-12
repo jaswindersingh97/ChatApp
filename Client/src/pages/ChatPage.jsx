@@ -3,6 +3,7 @@ import styles from './ChatPage.module.css';
 import SearchOverlay from '../components/SearchOverlay'; 
 import getPrevChats from '../api/chatGroups';
 import Right from '../components/Right';
+import CreateGroup from '../components/CreateGroup';
 
 function ChatPage() {
   const [searchVisible, setSearchVisible] = useState(false);
@@ -66,8 +67,10 @@ function ChatPage() {
           </div>
         </div>
         <div className={styles.right}>
-        select a chat
+        {/* select a chat */}
         {/* <Right/> */}
+        {/* Testing*/}
+        <CreateGroup/>
         </div>
       </div>
     </div>

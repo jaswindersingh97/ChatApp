@@ -115,7 +115,7 @@ const Chats = async (req, res) => {
   
 const createGroupChat = async(req,res) =>{
     if(!req.body.users || !req.body.name){
-        res.status(400).message("share all the fields");
+        res.status(400).json("share all the fields");
     }
     const users = req.body.users;
 
