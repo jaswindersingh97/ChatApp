@@ -1,22 +1,40 @@
 import React from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import ChatPage from './pages/ChatPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-// Create a function to check if the token exists
+const ProtectedRoute = ({ element: Component }) => {
+  const { isTokenValid } = useAuth();
+  return isTokenValid() ? <Component /> : <Navigate to="/" />;
+};
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<HomePage />} />
-        {/* Protect the chat page */}
-        <Route path='/chatPage' element={<ProtectedRoute element={ChatPage} />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Redirect signed-in users to ChatPage if they try to access HomePage */}
+          <Route 
+            path="/" 
+            element={<AuthRedirect />} 
+          />
+          {/* Protect ChatPage route */}
+          <Route 
+            path="/chatPage" 
+            element={<ProtectedRoute element={ChatPage} />} 
+          />
+          {/* Optionally handle unknown routes */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
+
+const AuthRedirect = () => {
+  const { isTokenValid } = useAuth();
+  return isTokenValid() ? <Navigate to="/chatPage" /> : <HomePage />;
+};
 
 export default App;

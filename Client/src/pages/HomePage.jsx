@@ -3,7 +3,7 @@ import styles from './HomePage.module.css';
 import SignUp from '../components/SignUp';
 import SignIn from '../components/SignIn';
 function HomePage() {
-    const [signForm,setSignForm]=useState(false);
+    const [signForm,setSignForm]=useState(true);
   return (
     <div className={styles.container}>
         <div className={styles.box}>    
