@@ -3,11 +3,12 @@ import styles from './ChatPage.module.css';
 import SearchOverlay from '../components/SearchOverlay'; 
 import getPrevChats from '../api/chatGroups';
 import Right from '../components/Right';
-import CreateGroup from '../components/CreateGroup';
+import CreateGroup from '../components/CreateGroup'; //need to create this better
 
 function ChatPage() {
   const [searchVisible, setSearchVisible] = useState(false);
   
+  const [selectedChat,setSelectedChat] = useState("");
   
   const currentUserId = localStorage.getItem("id"); 
 
@@ -17,6 +18,10 @@ function ChatPage() {
       getPrevChat();
   }, [searchVisible]);
 
+  const selectChat = ({_id}) =>{
+    // console.log(_id);
+    setSelectedChat(_id);
+  }
 
   const toggleSearch = () => {
     setSearchVisible(!searchVisible);
@@ -53,7 +58,7 @@ function ChatPage() {
               const otherUser = chat.users.find(user => user._id !== currentUserId); // Find the other user in one-on-one chat
 
               return (
-                <div key={index} className={styles.ele}>
+                <div key={index} onClick={()=>selectChat(chat)} className={styles.ele}>
                   <h2>
                     {chat.isGroupChat ? chat.chatName : (otherUser ? otherUser.name : "No Name")}
                   </h2>
@@ -68,9 +73,9 @@ function ChatPage() {
         </div>
         <div className={styles.right}>
         {/* select a chat */}
-        {/* <Right/> */}
+        <Right selectedChat={selectedChat}/>
         {/* Testing*/}
-        <CreateGroup/>
+        {/* <CreateGroup/> */}
         </div>
       </div>
     </div>
