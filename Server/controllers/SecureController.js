@@ -1,5 +1,6 @@
 const Chat = require('../models/ChatModel');
 const User = require('./../models/User');
+const Message = require('./../models/MessageModel');
 
 const searchUser = async (req, res) => {
     const { query } = req.query; // Extract the query from URL query string
@@ -214,4 +215,51 @@ const removeMember = async(req,res) =>{
       }
 }
 
-module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp,addMembers,removeMember};
+createMessage = async(req,res) =>{
+    const {content, chatId} = req.body;
+    if(!content || !chatId){
+        res.status(400).json({message:"send the content and chatId"})
+    }
+    var newMessage={
+        sender:req.user._id,
+        content:content,
+        chat:chatId
+    };
+
+    try{
+        var message = await Message.create(newMessage)
+
+        message = await message.populate("sender");
+        message = await message.populate("chat");
+        message = await User.populate(message,{
+            path:"chat.users"
+        });
+
+        await Chat.findByIdAndUpdate(req.body.chatId,{
+            latestMessage:message,
+        })
+        res.status(200).json(message)
+    }
+    catch(error){
+        res.status(500).json({message:"error", error})
+    }
+};
+
+const getMessages = async (req,res) =>{
+    const chatId = req.params.chatId;
+    if(!chatId){
+        res.status(400).json({message:"share the chatId"});
+    }
+    try{
+        const message = await Message.find({chat:chatId})
+        .populate("sender")
+        .populate("chat");
+
+        res.status(200).json(message);
+    }
+    catch(error){
+        res.status(400).json({error})
+    }
+}
+
+module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp,addMembers,removeMember,createMessage,getMessages};
