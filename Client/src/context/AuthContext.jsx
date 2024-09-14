@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import isTokenValid from '../utils/isTokenValid';
 
 // Create context
@@ -12,9 +12,13 @@ export const AuthProvider = ({ children }) => {
     return isTokenValid();
   };
 
+  const [currentUserId,setCurrentUserId] = useState(localStorage.getItem("id") || '');
+
   const value = {
     token,
     setToken,
+    currentUserId,
+    setCurrentUserId,
     isTokenValid: isTokenValidContext
   };
 

@@ -5,7 +5,7 @@ const {searchUser,Users,getChat,Chats, createGroupChat, renameGrp, addMembers,re
 
 router.get('/search', searchUser); //Searching the users
 router.get('/users', Users); //getting all the users
-router.post('/chat',getChat); //getting particular chat of 1 to 1 user
+router.post('/chat',getChat); //getting particular chat of 1 to 1 user or create a 1v1 chat
 router.get("/chats",Chats); //getting all the chats of the user
 router.post("/gChat",createGroupChat); //creating group chat 
 router.put("/renameGrpName",renameGrp); // rename the groupname

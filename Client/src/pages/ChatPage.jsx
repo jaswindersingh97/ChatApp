@@ -3,25 +3,33 @@ import styles from './ChatPage.module.css';
 import SearchOverlay from '../components/SearchOverlay'; 
 import getPrevChats from '../api/chatGroups';
 import Right from '../components/Right';
-import CreateGroup from '../components/CreateGroup'; //need to create this better
+import CreateGroup from '../components/CreateGroup';
+import { useAuth } from '../context/AuthContext';
 
 function ChatPage() {
   const [searchVisible, setSearchVisible] = useState(false);
-  
-  const [selectedChat,setSelectedChat] = useState("");
-  
-  const currentUserId = localStorage.getItem("id"); 
-
+  const [selectedChat, setSelectedChat] = useState("");
   const [prevChats, SetPrevChats] = useState([]);
+  const [prevChatsName, SetPrevChatsName] = useState([]);
+  const {token,currentUserId} = useAuth();
 
   useEffect(() => {
-      getPrevChat();
-  }, [searchVisible]);
+    // Fetch previous chats
+    const getPrevChat = async () => {
+      const data = await getPrevChats({ token });
+      SetPrevChats(data);
 
-  const selectChat = ({_id}) =>{
-    // console.log(_id);
-    setSelectedChat(_id);
-  }
+      // Once chats are fetched, generate their names
+      const chatNames = getChatName(data);
+      SetPrevChatsName(chatNames);
+    };
+
+    getPrevChat();
+  }, []);  // Empty array to ensure this runs once on component mount
+
+  const selectChat = ({ _id,name }) => {
+    setSelectedChat({_id,name});
+  };
 
   const toggleSearch = () => {
     setSearchVisible(!searchVisible);
@@ -31,11 +39,16 @@ function ChatPage() {
     setSearchVisible(false);
   };
 
-  const getPrevChat = async () => {
-    const token = localStorage.getItem("token");
-    // console.log(token);
-    const data = await getPrevChats({ token });
-    SetPrevChats(data);
+  // Function to get chat names based on whether it's a group chat or one-on-one
+  const getChatName = (array) => {
+    return array.map((item) => {
+      if (item.isGroupChat) {
+        return { _id: item._id, name: item.chatName };
+      } else {
+        const user = item.users.find((user) => user._id !== currentUserId);
+        return user ? { _id: user._id, name: user.name } : { _id: "unknown", name: "Unknown User" };
+      }
+    });
   };
 
   return (
@@ -54,28 +67,21 @@ function ChatPage() {
             <button>New Group chat +</button>
           </div>
           <div className={styles.leftbody}>
-            {prevChats.map((chat, index) => {
-              const otherUser = chat.users.find(user => user._id !== currentUserId); // Find the other user in one-on-one chat
-
-              return (
-                <div key={index} onClick={()=>selectChat(chat)} className={styles.ele}>
-                  <h2>
-                    {chat.isGroupChat ? chat.chatName : (otherUser ? otherUser.name : "No Name")}
-                  </h2>
-                  <div>
-                    <span>{chat.latestMessage ? chat.latestMessage.sender.name : "No Sender"}</span>
-                    <p>{chat.latestMessage ? chat.latestMessage.content : "No messages yet"}</p>
-                  </div>
+            {prevChats.map((chat, index) => (
+              <div key={chat._id} onClick={() => selectChat(prevChatsName[index])} className={styles.ele}>
+                <h2>{prevChatsName[index] ? prevChatsName[index].name : 'Loading...'}</h2>
+                <div>
+                  <span>{chat.latestMessage ? chat.latestMessage.sender.name : "No Sender"}</span>
+                  <p>{chat.latestMessage ? chat.latestMessage.content : "No messages yet"}</p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
         <div className={styles.right}>
-        {/* select a chat */}
-        <Right selectedChat={selectedChat}/>
-        {/* Testing*/}
-        {/* <CreateGroup/> */}
+          <Right selectedChat={selectedChat} />
+          {/* Testing */}
+          {/* <CreateGroup/> */}
         </div>
       </div>
     </div>
