@@ -5,9 +5,9 @@ import getMessage from '../api/getMessage';
 import { useAuth } from '../context/AuthContext';
 import CreateMessage from '../api/CreateMessage';
 
-function Right({ selectedChat }) {
+function Right({ selectedChat,chats,setChats }) {
   const { token, currentUserId } = useAuth();
-  const [chats, setChats] = useState([]);
+  // const [chats, setChats] = useState([]);
   const [message, setMessage] = useState("");
   const { _id, name } = selectedChat || {}; // Handle case where selectedChat might be undefined
 

@@ -12,6 +12,7 @@ function ChatPage() {
   const [prevChats, SetPrevChats] = useState([]);
   const [prevChatsName, SetPrevChatsName] = useState([]);
   const {token,currentUserId} = useAuth();
+  const [chats, setChats] = useState([]);
 
   useEffect(() => {
     // Fetch previous chats
@@ -79,7 +80,8 @@ function ChatPage() {
           </div>
         </div>
         <div className={styles.right}>
-          <Right selectedChat={selectedChat} />
+        {selectedChat?<Right selectedChat={selectedChat} setChats={setChats} chats={chats} />:<div style={{display:'flex',padding:"20px" }}>Need to add a component here </div>
+        }
           {/* Testing */}
           {/* <CreateGroup/> */}
         </div>
