@@ -46,7 +46,7 @@ function ChatPage() {
         return { _id: item._id, name: item.chatName };
       } else {
         const user = item.users.find((user) => user._id !== currentUserId);
-        return user ? { _id: user._id, name: user.name } : { _id: "unknown", name: "Unknown User" };
+        return { _id: item._id, name: user ? user.name : "Unknown User" };
       }
     });
   };
