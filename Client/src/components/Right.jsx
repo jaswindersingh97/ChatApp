@@ -27,7 +27,6 @@ function Right({ selectedChat }) {
     try {
       const data = await getMessage({ chatId: _id, token });
       setChats(data || []);
-      console.log(data);
     } catch (error) {
       console.error('Error fetching chat messages:', error);
     }

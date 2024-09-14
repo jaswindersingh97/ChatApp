@@ -64,7 +64,7 @@ const getChat = async (req, res) => {
             isGroupChat: false,
             users: { $all: [req.user._id, userId] }
         })
-        .populate("users", "name email") // Ensure all users are populated with name and email
+        .populate("users") // Ensure all users are populated with name and email
         .populate("latestMessage");
 
         // Populate the sender of the latest message
@@ -221,7 +221,7 @@ const removeMember = async(req,res) =>{
       }
 }
 
-createMessage = async(req,res) =>{
+const createMessage = async(req,res) =>{
     const {content, chatId} = req.body;
     if(!content || !chatId){
         res.status(400).json({message:"send the content and chatId"})
