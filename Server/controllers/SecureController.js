@@ -103,8 +103,14 @@ const Chats = async (req, res) => {
         users: { $elemMatch: { $eq: req.user._id } }
       }).populate("users")
         .populate("groupAdmin")
-        .populate("latestMessage")
+        .populate({
+            path: 'latestMessage', // Populate the latestMessage field
+            populate: { 
+              path: 'sender' // Nested populate for sender inside latestMessage
+            }
+        })
         .sort({updatedAt:-1});
+        
       res.status(200).send(result);
     } catch (error) {
       res.status(400).json({

@@ -3,6 +3,7 @@ import senticon from './../assets/senticon.png';
 import style from './Right.module.css';
 import getMessage from '../api/getMessage';
 import { useAuth } from '../context/AuthContext';
+import CreateMessage from '../api/CreateMessage';
 
 function Right({ selectedChat }) {
   const { token, currentUserId } = useAuth();
@@ -36,9 +37,9 @@ function Right({ selectedChat }) {
     e.preventDefault();
     if (!message.trim()) return; // Prevent sending empty messages
     try {
-      console.log("Sending message:", message);
       // You can add your API call to send the message here
-
+      const data = await CreateMessage({token,message,_id})
+      console.log("Sending message:", message , data);
       // Clear the input after sending
       setMessage("");
     } catch (error) {
