@@ -13,7 +13,7 @@ const socketSetup = (server) => {
   });
 
   const activeUsers = new Map();  
-  
+
   io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
   

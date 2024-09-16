@@ -51,3 +51,15 @@
     border: 1px,solid,rgb(162, 91, 91);
     cursor: pointer;
   }
+  .status{
+    border: 1px,solid,black;
+    border-radius: 50%;
+  }
+  .red{
+    color: red;
+    background: red;
+  }
+  .green{
+    color: green;
+    background: green; 
+  }
