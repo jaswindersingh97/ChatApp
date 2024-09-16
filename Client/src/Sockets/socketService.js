@@ -12,11 +12,11 @@ export const connectSocket = (serverUrl, token) => {
     });
 
     socket.on('connect', () => {
-      console.log('Client connected, socket ID:', socket.id, 'Token:', token);
+      console.log('Client "Socket" connected');
     });
 
     socket.on('disconnect', () => {
-      console.log('Client disconnected');
+      console.log('Client "Socket" disconnected');
     });
   }
 
@@ -44,9 +44,16 @@ export const sendMessage = (roomId, message) => {
 // Function to listen for messages
 export const onMessageReceived = (callback) => {
   if (socket) {
-    socket.on('receiveMessage', (data) => {
-      callback(data);
-    });
+    socket.on('receiveMessage', callback);
+  } else {
+    console.error('Socket not connected');
+  }
+};
+
+// Function to remove the message listener
+export const removeMessageListener = (callback) => {
+  if (socket) {
+    socket.off('receiveMessage', callback);
   } else {
     console.error('Socket not connected');
   }

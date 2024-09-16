@@ -3,19 +3,41 @@ import senticon from './../assets/senticon.png';
 import style from './Right.module.css';
 import getMessage from '../api/getMessage';
 import { useAuth } from '../context/AuthContext';
-import CreateMessage from '../api/CreateMessage';
+import { sendMessage, onMessageReceived,removeMessageListener } from '../Sockets/socketService';
 
-function Right({ selectedChat,chats,setChats }) {
+
+function Right({ selectedChat, chats, setChats }) {
   const { token, currentUserId } = useAuth();
-  // const [chats, setChats] = useState([]);
   const [message, setMessage] = useState("");
   const { _id, name } = selectedChat || {}; // Handle case where selectedChat might be undefined
 
   useEffect(() => {
     if (_id) {
-      getChats();
+      getChats(); // Fetch messages when the chat is selected
     }
-  }, [selectedChat]);
+  }, [_id]); // Dependency array includes _id to refetch on chat change
+
+
+useEffect(() => {
+  const handleMessage = (data) => {
+    console.log("Message received:", data);
+
+    // Ensure the message is for the currently selected chat
+    if (data && data.chat && data.chat === _id) {
+      setChats((prevChats) => [...prevChats, data]); // Append the new message to the chat
+    }
+  };
+
+  // Attach the message listener
+  onMessageReceived(handleMessage);
+
+  // Cleanup function to remove the listener
+  return () => {
+    removeMessageListener(handleMessage); // Properly remove the listener
+  };
+}, [_id]); // Dependency array includes _id to handle chat-specific messages
+
+
 
   const onKeysDown = (e) => {
     if (e.key === 'Enter' && (e.shiftKey || e.ctrlKey)) {
@@ -32,15 +54,13 @@ function Right({ selectedChat,chats,setChats }) {
     }
   };
 
-  const onFormSubmit = async (e) => {
+  const onFormSubmit = (e) => {
     e.preventDefault();
     if (!message.trim()) return; // Prevent sending empty messages
+
     try {
-      // You can add your API call to send the message here
-      const data = await CreateMessage({token,message,_id})
-      console.log("Sending message:", message , data);
-      // Clear the input after sending
-      setMessage("");
+      sendMessage(_id, message); // Send message via socket
+      setMessage(""); // Clear the input after sending
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -58,7 +78,6 @@ function Right({ selectedChat,chats,setChats }) {
       <div className={style.content}>
         {chats.length > 0 ? (
           chats.map((item, index) => (
-            
             <div
               key={index}
               className={`${style.element} ${

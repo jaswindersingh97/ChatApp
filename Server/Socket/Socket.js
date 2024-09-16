@@ -1,6 +1,10 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/User');  // Import your User model
+const Message = require('./../models/MessageModel');  // Assuming this is your Message model
+const Chat = require('./../models/ChatModel');  // Assuming you have a Chat model
+
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';  // You should store this in a secure place, like environment variables
 
 const socketSetup = (server) => {
@@ -54,12 +58,31 @@ const socketSetup = (server) => {
     });
 
     // Handle sending a message
-    socket.on('sendMessage', ({ roomId, message }) => {
+    socket.on('sendMessage', async({ roomId, message }) => {
       const userId = socket.user._id;  // Get the user ID from the socket object
       console.log(`Message from user ${userId}: ${message}`);
-      
-      // Emit the message to the room
-      io.to(roomId).emit('receiveMessage', { message, senderId: userId });
+
+      try {
+        // Create and save the message to the database
+        const newMessage = await Message.create({
+          sender: userId,
+          content: message,
+          chat: roomId,
+        });
+        // Populate the sender details for the response
+        const fullMessage = await newMessage.populate('sender');
+
+        // Update the latest message in the chat
+        await Chat.findByIdAndUpdate(roomId, {
+          latestMessage: fullMessage,
+        });
+
+        // Emit the message to the room
+        io.to(roomId).emit('receiveMessage', fullMessage);
+      }
+      catch(error){
+        console.error('Error saving message:', error);
+      }
     });
 
     // Handle disconnection
