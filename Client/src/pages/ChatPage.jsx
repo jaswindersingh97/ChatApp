@@ -4,7 +4,7 @@ import SearchOverlay from '../components/SearchOverlay';
 import getPrevChats from '../api/chatGroups';
 import Right from '../components/Right';
 import { useAuth } from '../context/AuthContext';
-import { connectSocket, disconnectSocket } from '../Sockets/socketService'; 
+import { connectSocket, disconnectSocket, joinRoom } from '../Sockets/socketService'; 
 
 function ChatPage() {
   const [searchVisible, setSearchVisible] = useState(false);
@@ -15,29 +15,34 @@ function ChatPage() {
   const [chats, setChats] = useState([]);
 
   useEffect(() => {
-    // Connect socket on mount, passing the userId
-    const socket = connectSocket('http://localhost:3000', currentUserId);
-    console.log(currentUserId);
-    // Fetch previous chats
-    const getPrevChat = async () => {
-      const data = await getPrevChats({ token });
-      setPrevChats(data);
+    // Connect socket on mount, passing the token
+    const socket = connectSocket('http://localhost:3000', token);
 
-      // Generate chat names after fetching chats
-      const chatNames = generateChatNames(data);
-      setPrevChatsName(chatNames);
+    // Fetch previous chats
+    const fetchChats = async () => {
+      try {
+        const data = await getPrevChats({ token });
+        setPrevChats(data);
+
+        // Generate chat names after fetching chats
+        const chatNames = generateChatNames(data);
+        setPrevChatsName(chatNames);
+      } catch (error) {
+        console.error('Error fetching previous chats:', error);
+      }
     };
 
-    getPrevChat();
+    fetchChats();
 
+    // Disconnect the socket on component unmount
     return () => {
-      // Disconnect the socket on component unmount
       disconnectSocket();
     };
-  }, [token, currentUserId]);  // Ensure currentUserId is passed
+  }, [token]);  // Use token as dependency, currentUserId is not required here
 
   const selectChat = ({ _id, name }) => {
     setSelectedChat({ _id, name });
+    joinRoom(_id);  // Join the room when a chat is selected
   };
 
   const toggleSearch = () => {

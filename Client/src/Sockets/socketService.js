@@ -3,17 +3,20 @@ import { io } from 'socket.io-client';
 let socket; // Declare socket without initializing
 
 // Function to connect the socket to the server
-export const connectSocket = (serverUrl, userId) => {
+export const connectSocket = (serverUrl, token) => {
   if (!socket) {
-    socket = io(serverUrl);
+    socket = io(serverUrl, {
+      auth: {
+        token: token, // Pass token for authentication
+      },
+    });
 
     socket.on('connect', () => {
-      console.log('Client connected, socket ID:', socket.id);
+      console.log('Client connected, socket ID:', socket.id, 'Token:', token);
+    });
 
-      // Emit userId to the server after connection
-      if (userId) {
-        socket.emit('userConnected', { userId });
-      }
+    socket.on('disconnect', () => {
+      console.log('Client disconnected');
     });
   }
 

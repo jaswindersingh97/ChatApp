@@ -1,11 +1,11 @@
-// socket.js
 const { Server } = require('socket.io');
-
+const jwt = require('jsonwebtoken');
 const User = require('./../models/User');  // Import your User model
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';  // You should store this in a secure place, like environment variables
 
 const socketSetup = (server) => {
   const io = new Server(server, {
-    pingTimeout:60000,
+    pingTimeout: 60000,
     cors: {
       origin: "http://localhost:5173", // Adjust this to your front-end URL
       methods: ["GET", "POST"]
@@ -14,29 +14,48 @@ const socketSetup = (server) => {
 
   const activeUsers = new Map();  
 
-  io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-  
-    // Listen for 'userConnected' event and store userId with socketId 
-    socket.on('userConnected', async({ userId }) => {
-      console.log(`User connected: ${userId}, Socket ID: ${socket.id}`);
-      // Store userId and socketId in a map or database for tracking user online status
+  // Middleware to authenticate and extract user info from token
+    io.use((socket, next) => {
+      const token = socket.handshake.auth.token?.replace(/^Bearer\s/, '');
+      // console.log(token)
+      if (!token) {
+        return next(new Error('Authentication error: Token missing'));
+      }
 
-      // Update the user's status to active
-      await User.findByIdAndUpdate(userId, { isActive: true });
+      // Verify the token
+      jwt.verify(token, JWT_SECRET, async (err, decoded) => {
+        if (err) {
+          return next(new Error('Authentication error: Invalid token'));
+        }
 
-      // Optionally, store the active user in an in-memory map or similar structure
-      activeUsers.set(socket.id, userId);
+        // Attach user info to the socket object for further use
+        socket.user = decoded;  // Assuming the token payload contains _id
+
+        try {
+          // Update user as active in the database
+          await User.findByIdAndUpdate(socket.user._id, { isActive: true });
+
+          // Add the user to activeUsers map
+          activeUsers.set(socket.id, socket.user._id);
+          next();  // Proceed to connection event
+        } catch (error) {
+          next(new Error('Database error: Unable to update user status'));
+        }
+      });
     });
 
-    // Handling user joining a room
+  io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id, 'User ID:', socket.user._id);
+
+    // Handle room joining
     socket.on('joinRoom', ({ roomId }) => {
       socket.join(roomId);
-      console.log(`User with ID: ${socket.id} joined room: ${roomId}`);
+      console.log(`User with ID: ${socket.user._id} joined room: ${roomId}`);
     });
-    // handle send message
+
+    // Handle sending a message
     socket.on('sendMessage', ({ roomId, message }) => {
-      const userId = users[socket.id]; // Get user ID from the socket ID
+      const userId = socket.user._id;  // Get the user ID from the socket object
       console.log(`Message from user ${userId}: ${message}`);
       
       // Emit the message to the room
@@ -58,9 +77,7 @@ const socketSetup = (server) => {
         // Remove the user from the active users map
         activeUsers.delete(socket.id);
       }
-
     });
-  
   });
 };
 
