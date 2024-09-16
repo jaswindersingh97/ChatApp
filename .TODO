@@ -1,10 +1,24 @@
 # TODO - What is left
 
-1. Create the GroupChat button clickable, adding the form in front.
-2. New message pop up in other chats
-3. Date wise chat
-4. seen not seen functionality
-5. profile page, status of the user
-6. add the typing message (...) in the chat
-7. implement the front end to get to know the user has seen the message or not
-8. apply some better visuals while moving from one screen to other
+## General Tasks
+
+1. Make the GroupChat button clickable and add a form for creating a new group chat.
+2. Ensure that new messages appear in all relevant chats.
+
+## Features
+
+1. Implement date-wise chat organization or display.
+2. Add functionality to track and display message read statuses (seen vs. not seen).
+
+## User Interface
+
+1. Create a profile page with user status and additional profile details.
+2. Implement typing indicators (e.g., "typing...") in the chat interface.
+3. Develop frontend features to indicate whether the user has seen the message.
+4. Enhance visual transitions between screens for a smoother user experience.
+5. Adjust chat message display to flow from bottom to top.
+6. Implement pagination to limit the display to the first 20 messages and load more as needed.
+
+## OPTIONAL
+
+1. Add support for sending and displaying images, videos, and documents within messages.
