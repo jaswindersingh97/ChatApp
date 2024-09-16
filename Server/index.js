@@ -5,6 +5,8 @@ const SecureRoutes = require('./Endpoints/SecureRoutes');
 const AuthMiddleware = require('./Middleware/AuthMiddleware');
 const app=express();
 const connectDB = require('./config/db'); 
+const socketSetup = require('./Socket/Socket');
+
 require('dotenv').config();
 connectDB();
 app.use(express.json())
@@ -21,6 +23,8 @@ app.use('/auth', authRoutes);
 
 app.use('/secureRoute',AuthMiddleware,SecureRoutes)
 
-app.listen(3000,()=>{
+const server = app.listen(3000,()=>{
     console.log("server is running on port",3000)
 })
+
+socketSetup(server);

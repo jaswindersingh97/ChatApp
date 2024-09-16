@@ -69,6 +69,7 @@ function SearchOverlay({ closeSearch }) {
             <div key={index} onClick={()=>onChatClk(item)} className={styles.element}>
               <span>PP</span>
               <p>{item.name}</p> {/* Assuming 'name' is a field in the user data */}
+              <p>status:{item.isActive?"Active":"Inactive"}</p>
             </div>
           ))}
         </div>

@@ -1,22 +1,29 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    name: {
+    name: { // to save the name
         type: String,
         required: true,
         trim: true, // Removes any leading or trailing whitespaces
     },
-    email: {
+    email: { // to save the unique email id
         type: String,
         required: true,
         unique: true, // Ensures no duplicate emails
         trim: true,
         lowercase: true, // Converts the email to lowercase
     },
-    password: {
+    password: { // To save the hashed password
         select: false,
         type: String,
         required: true,
+    },
+    isActive: {  // To track if user is online
+        type: Boolean,
+        default: false 
+    },
+    lastActive: { // To track the last time user was online
+         type: Date
     },
     createdAt: {
         type: Date,
