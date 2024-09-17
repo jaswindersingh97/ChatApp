@@ -1,39 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ChatPage.module.css';
 import SearchOverlay from '../components/SearchOverlay'; 
-import getPrevChats from '../api/chatGroups';
 import Right from '../components/Right';
+import CreateGroup from './../components/CreateGroup';
 import { useAuth } from '../context/AuthContext';
 import { connectSocket, disconnectSocket, joinRoom } from '../Sockets/socketService'; 
 
 function ChatPage() {
-  const [searchVisible, setSearchVisible] = useState(false);
-  const [selectedChat, setSelectedChat] = useState("");
-  const [prevChats, setPrevChats] = useState([]);
-  const [prevChatsName, setPrevChatsName] = useState([]);
-  const { token, currentUserId } = useAuth(); // Access currentUserId from auth context
-  const [chats, setChats] = useState([]);
 
-  useEffect(() => {
+  const {
+    token,  // token from localstorage
+    searchVisible,  // state to show / hide search new chat
+    toggleSearch, // hide show search new chat
+    selectedChat, // state to select chat
+    setSelectedChat, // setstate to select chat
+    fetchChats, // method to load the prevchats
+    prevChats, // state to load prevChats
+    prevChatsName, // state to load prevChatsname
+    chats, 
+    setChats,
+    } = useAuth(); // Access currentUserId from auth context
+  // const [chats, setChats] = useState([]);
+
+  useEffect(()=>{ // useEffect to fetch chat group names from api
+    fetchChats();//fetch the chat names in left
+  },[searchVisible])
+
+  useEffect(() => { // UseEffect to connect the socket connection
     // Connect socket on mount, passing the token
-    const socket = connectSocket('http://localhost:3000', token);
-
-    // Fetch previous chats
-    const fetchChats = async () => {
-      try {
-        const data = await getPrevChats({ token });
-        setPrevChats(data);
-
-        // Generate chat names after fetching chats
-        const chatNames = generateChatNames(data);
-        setPrevChatsName(chatNames);
-      } catch (error) {
-        console.error('Error fetching previous chats:', error);
-      }
-    };
-
-    fetchChats();
-
+    connectSocket('http://localhost:3000', token);
     // Disconnect the socket on component unmount
     return () => {
       disconnectSocket();
@@ -45,29 +40,9 @@ function ChatPage() {
     joinRoom(_id);  // Join the room when a chat is selected
   };
 
-  const toggleSearch = () => {
-    setSearchVisible(!searchVisible);
-  };
-
-  const closeSearch = () => {
-    setSearchVisible(false);
-  };
-
-  // Function to get chat names based on whether it's a group chat or one-on-one
-  const generateChatNames = (array) => {
-    return array.map((item) => {
-      if (item.isGroupChat) {
-        return { _id: item._id, name: item.chatName };
-      } else {
-        const user = item.users.find((user) => user._id !== currentUserId);
-        return { _id: item._id, name: user ? user.name : "Unknown User" };
-      }
-    });
-  };
-
   return (
     <div className={styles.container}>
-      {searchVisible && <SearchOverlay closeSearch={closeSearch} />}
+      {searchVisible && <SearchOverlay closeSearch={toggleSearch} />}
       <div className={styles.header}>
         <button onClick={toggleSearch}>SearchBar</button>
         <h1>ChatApp</h1>
@@ -84,7 +59,9 @@ function ChatPage() {
             {prevChats.map((chat, index) => (
               <div 
                 key={chat._id} 
-                onClick={() => selectChat(prevChatsName[index])} 
+                onClick={() => {
+                  selectChat(prevChatsName[index]);
+                }} 
                 className={styles.ele}>
                 <h2>{prevChatsName[index] ? prevChatsName[index].name : 'Loading...'}</h2>
                 <div>
