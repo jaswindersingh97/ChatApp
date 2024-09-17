@@ -20,7 +20,8 @@ function ChatPage() {
     chats, 
     setChats,
     } = useAuth(); // Access currentUserId from auth context
-  // const [chats, setChats] = useState([]);
+    
+  const [showGroup,setShowGroup] =useState(false);  
 
   useEffect(()=>{ // useEffect to fetch chat group names from api
     fetchChats();//fetch the chat names in left
@@ -43,6 +44,7 @@ function ChatPage() {
   return (
     <div className={styles.container}>
       {searchVisible && <SearchOverlay closeSearch={toggleSearch} />}
+      {showGroup && <CreateGroup/>}
       <div className={styles.header}>
         <button onClick={toggleSearch}>SearchBar</button>
         <h1>ChatApp</h1>
@@ -53,7 +55,7 @@ function ChatPage() {
         <div className={styles.left}>
           <div className={styles.leftheader}>
             <p>MY CHATS</p>
-            <button>New Group chat +</button>
+            <button onClick={()=>{setShowGroup(!showGroup)}}>New Group chat +</button>
           </div>
           <div className={styles.leftbody}>
             {prevChats.map((chat, index) => (

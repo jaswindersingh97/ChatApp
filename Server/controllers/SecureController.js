@@ -4,7 +4,8 @@ const Message = require('./../models/MessageModel');
 
 const searchUser = async (req, res) => {
     const { query } = req.query; // Extract the query from URL query string
-    
+    const userId = req.user._id; // Assuming the user ID is stored in req.user after authentication
+
     try {
         // Validate the query parameter
         if (!query) {
@@ -13,11 +14,17 @@ const searchUser = async (req, res) => {
 
         // Search in both 'name' and 'email' fields using regex and case-insensitivity
         const users = await User.find({
-            $or: [
-                { name: { $regex: query, $options: 'i' } },
-                { email: { $regex: query, $options: 'i' } }
+            $and: [
+                {
+                    $or: [
+                        { name: { $regex: query, $options: 'i' } },
+                        { email: { $regex: query, $options: 'i' } }
+                    ]
+                },
+                { _id: { $ne: userId } } // Exclude the logged-in user by checking that _id is not equal to the current user's ID
             ]
         });
+
 
         // Handle case when no users are found
         if (users.length === 0) {
