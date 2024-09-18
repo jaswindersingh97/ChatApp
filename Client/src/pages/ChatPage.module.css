@@ -6,7 +6,8 @@
     flex-direction: column;
     box-sizing: border-box;
     overflow-x: hidden;
-    position: relative;}
+    position: relative;
+}
 .header{
     background-color:tomato;
     display: flex;

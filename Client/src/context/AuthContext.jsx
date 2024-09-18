@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }) => {
   
   const [chats, setChats] = useState([]);
 
+  const [showGroup, setShowGroup] = useState(false);  
+
   // Fetch previous chats
   const fetchChats = async () => {
     try {
@@ -77,6 +79,8 @@ export const AuthProvider = ({ children }) => {
     generateChatNames,
     chats, 
     setChats,
+    showGroup, 
+    setShowGroup
   };
 
   return (

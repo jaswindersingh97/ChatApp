@@ -7,7 +7,6 @@ import { useAuth } from '../context/AuthContext';
 import { connectSocket, disconnectSocket, joinRoom } from '../Sockets/socketService'; 
 
 function ChatPage() {
-
   const {
     token,  // token from localstorage
     searchVisible,  // state to show / hide search new chat
@@ -19,22 +18,20 @@ function ChatPage() {
     prevChatsName, // state to load prevChatsname
     chats, 
     setChats,
-    } = useAuth(); // Access currentUserId from auth context
+    showGroup, 
+    setShowGroup
+  } = useAuth(); // Access currentUserId from auth context
     
-  const [showGroup,setShowGroup] =useState(false);  
+  useEffect(() => { // Fetch chat group names from API on load
+    fetchChats(); 
+  }, [searchVisible]);
 
-  useEffect(()=>{ // useEffect to fetch chat group names from api
-    fetchChats();//fetch the chat names in left
-  },[searchVisible])
-
-  useEffect(() => { // UseEffect to connect the socket connection
-    // Connect socket on mount, passing the token
-    connectSocket('http://localhost:3000', token);
-    // Disconnect the socket on component unmount
+  useEffect(() => { // Connect the socket connection
+    connectSocket('http://localhost:3000', token); // Pass token to connectSocket
     return () => {
-      disconnectSocket();
+      disconnectSocket(); // Clean up on unmount
     };
-  }, [token]);  // Use token as dependency, currentUserId is not required here
+  }, [token]);
 
   const selectChat = ({ _id, name }) => {
     setSelectedChat({ _id, name });
@@ -44,7 +41,6 @@ function ChatPage() {
   return (
     <div className={styles.container}>
       {searchVisible && <SearchOverlay closeSearch={toggleSearch} />}
-      {showGroup && <CreateGroup/>}
       <div className={styles.header}>
         <button onClick={toggleSearch}>SearchBar</button>
         <h1>ChatApp</h1>
@@ -55,15 +51,13 @@ function ChatPage() {
         <div className={styles.left}>
           <div className={styles.leftheader}>
             <p>MY CHATS</p>
-            <button onClick={()=>{setShowGroup(!showGroup)}}>New Group chat +</button>
+            <button onClick={() => setShowGroup(!showGroup)}>New Group chat +</button>
           </div>
           <div className={styles.leftbody}>
             {prevChats.map((chat, index) => (
               <div 
                 key={chat._id} 
-                onClick={() => {
-                  selectChat(prevChatsName[index]);
-                }} 
+                onClick={() => selectChat(prevChatsName[index])} 
                 className={styles.ele}>
                 <h2>{prevChatsName[index] ? prevChatsName[index].name : 'Loading...'}</h2>
                 <div>
@@ -75,15 +69,17 @@ function ChatPage() {
           </div>
         </div>
         <div className={styles.right}>
-          {selectedChat ? 
+          {selectedChat ? (
             <Right selectedChat={selectedChat} setChats={setChats} chats={chats} /> 
-            : 
+          ) : (
             <div style={{ display: 'flex', padding: "20px" }}>
               Select a chat to start messaging
             </div>
-          }
+          )}
         </div>
       </div>
+
+      {showGroup && <CreateGroup />} {/* Show group creation form */}
     </div>
   );
 }

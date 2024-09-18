@@ -5,7 +5,7 @@ import SearchUsersApi from './../api/SearchUsersApi';
 import createGroupChat from '../api/createGroupChat';
 
 function CreateGroup() {
-    const { token } = useAuth();
+    const { token,setShowGroup } = useAuth();
     const [groupName, setGroupName] = useState("");
     const [search, setSearch] = useState("");
     const [searchedUsers, setSearchedUsers] = useState([]);
@@ -74,6 +74,7 @@ function CreateGroup() {
                 token
             });
             console.log("Group created:", response.data);
+            setShowGroup(false)
             // You can add a redirect or UI update after group creation
         } catch (error) {
             console.error("Error creating group chat:", error);
@@ -83,10 +84,11 @@ function CreateGroup() {
     };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container}> 
             <form className={styles.form} onSubmit={submitHandler}>
                 <div className={styles.heading}>
                     <p>Create Group Chat</p>
+                    <button onClick={()=>setShowGroup(false)}>X</button>
                 </div>
                 <div className={styles.textfields}>
                     <input
@@ -119,7 +121,7 @@ function CreateGroup() {
                     {loading && <p>Loading...</p>}
                     {error && <p className={styles.error}>{error}</p>}
                     {searchedUsers.length > 0 ? (
-                        searchedUsers.map((user, index) => (
+                        searchedUsers.slice(0,4).map((user, index) => (
                             <div
                                 key={index}
                                 onClick={() => onUserSelect(user)}
@@ -133,9 +135,12 @@ function CreateGroup() {
                         search && !loading && <p>No users found</p>
                     )}
                 </div>
-                <button type="submit" disabled={loading}>
+                <div >
+                <button className={styles.button} type="submit" disabled={loading}>
                     {loading ? "Creating..." : "Create Chat"}
                 </button>
+                </div>
+                
             </form>
         </div>
     );

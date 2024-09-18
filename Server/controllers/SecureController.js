@@ -127,35 +127,34 @@ const Chats = async (req, res) => {
     }
   };
   
-const createGroupChat = async(req,res) =>{
-    if(!req.body.users || !req.body.name){
-        res.status(400).json("share all the fields");
+  const createGroupChat = async (req, res) => {
+    if (!req.body.users || !req.body.name) {
+        return res.status(400).json({ message: "Please provide all the fields." });
     }
     const users = req.body.users;
 
-    if(users.length <2){
-        res.status(400).message("at least 2 users")
+    if (users.length < 2) {
+        return res.status(400).json({ message: "At least 2 users are required to create a group chat." });
     }
     users.push(req.user);
 
-    try{
+    try {
         const groupChat = await Chat.create({
             chatName: req.body.name,
             users: users,
             isGroupChat: true,
             groupAdmin: req.user,
         });
-        const fullGroupChat = await Chat.findOne({_id:groupChat._id})
-        .populate("users")
-        .populate("groupAdmin")
-        
-        res.status(200).json(fullGroupChat);
+        const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
+            .populate("users")
+            .populate("groupAdmin");
+
+        return res.status(200).json(fullGroupChat);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
-    catch(error){
-        res.status(400)
-        throw error.message
-    }
-}
+};
+
 const renameGrp = async(req,res) =>{
     const { chatId, chatName} = req.body;
     
