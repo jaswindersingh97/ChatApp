@@ -16,12 +16,14 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    
 }
 .header{
     width: 100%;
-    background: pink;
+    background: rgb(36, 41, 85);
     height: 10%;
     color: white;
+
 }
 .element{
     padding: 15px;
