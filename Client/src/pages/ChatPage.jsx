@@ -64,6 +64,9 @@ function ChatPage() {
                   <span>{chat.latestMessage ? chat.latestMessage.sender.name : "No Sender"}</span>
                   <p>{chat.latestMessage ? chat.latestMessage.content : "No messages yet"}</p>
                 </div>
+                <div className={styles.unseenCounter}>
+                  <span>5</span>
+                </div>
               </div>
             ))}
           </div>
