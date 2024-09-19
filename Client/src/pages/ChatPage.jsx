@@ -14,8 +14,8 @@ function ChatPage() {
     selectedChat, // state to select chat
     setSelectedChat, // setstate to select chat
     fetchChats, // method to load the prevchats
-    prevChats, // state to load prevChats
-    prevChatsName, // state to load prevChatsname
+    prevChats, // state to load prevChats without sender name in one to one chat
+    prevChatsName, // state to load prevChatsname with sender name in one to one chat
     chats, 
     setChats,
     showGroup, 
