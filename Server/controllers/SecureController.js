@@ -2,6 +2,7 @@ const Chat = require('../models/ChatModel');
 const User = require('./../models/User');
 const Message = require('./../models/MessageModel');
 
+const SyncUnseenCount = require('./../utils/SyncUnseenCount')
 const searchUser = async (req, res) => {
     const { query } = req.query; // Extract the query from URL query string
     const userId = req.user._id; // Assuming the user ID is stored in req.user after authentication
@@ -274,4 +275,9 @@ const getMessages = async (req,res) =>{
     }
 }
 
-module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp,addMembers,removeMember,createMessage,getMessages};
+const UnseenCounterSync = async(req, res)=>{
+    SyncUnseenCount();
+    res.status(200).json("excuted");
+}
+
+module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp,addMembers,removeMember,createMessage,getMessages, UnseenCounterSync};
