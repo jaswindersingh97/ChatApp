@@ -2,7 +2,8 @@ const Chat = require('../models/ChatModel');
 const User = require('./../models/User');
 const Message = require('./../models/MessageModel');
 
-const SyncUnseenCount = require('./../utils/SyncUnseenCount')
+const SyncUnseenCount = require('./../utils/SyncUnseenCount');
+const ChatUser = require('../models/ChatUser');
 const searchUser = async (req, res) => {
     const { query } = req.query; // Extract the query from URL query string
     const userId = req.user._id; // Assuming the user ID is stored in req.user after authentication
@@ -279,5 +280,23 @@ const UnseenCounterSync = async(req, res)=>{
     SyncUnseenCount();
     res.status(200).json("excuted");
 }
+const UnseenCount = async (req, res) => {
+    const userId = req.user._id;
+  
+    try {
+      // Fetch the unseen counts for the user
+      const data = await ChatUser.find({ User_id: userId }); // Ensure the field name matches your schema
+      console.log(userId);
+      // Check if data is found
+      if (!data) {
+        return res.status(404).json({ message: "No unseen counts found for this user." });
+      }
+      // Return the unseen counts
+      res.status(200).json(data);
+    } catch (error) {
+      console.error("Error fetching unseen counts:", error);
+      res.status(500).json({ message: "An error occurred while fetching unseen counts.", error: error.message });
+    }
+  };
 
-module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp,addMembers,removeMember,createMessage,getMessages, UnseenCounterSync};
+module.exports = { searchUser, Users, getChat, Chats, createGroupChat, renameGrp, addMembers, removeMember, createMessage, getMessages, UnseenCounterSync, UnseenCount};
