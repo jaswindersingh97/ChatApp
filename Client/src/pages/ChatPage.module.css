@@ -88,3 +88,6 @@
     text-align: center;
     place-content: center;
 }
+.selected{
+    background-color: rgb(137, 184, 132);
+}

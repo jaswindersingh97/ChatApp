@@ -21,10 +21,11 @@ function ChatPage() {
     showGroup, 
     setShowGroup
   } = useAuth(); // Access currentUserId from auth context
-    
+ 
   useEffect(() => { // Fetch chat group names from API on load
     fetchChats(); 
   }, [searchVisible]);
+
 
   useEffect(() => { // Connect the socket connection
     connectSocket('http://localhost:3000', token); // Pass token to connectSocket
@@ -58,7 +59,8 @@ function ChatPage() {
               <div 
                 key={chat._id} 
                 onClick={() => selectChat(prevChatsName[index])} 
-                className={styles.ele}>
+                className={`${styles.ele} ${chat._id === selectedChat._id && styles.selected }`}>
+
                 <h2>{prevChatsName[index] ? prevChatsName[index].name : 'Loading...'}</h2>
                 <div>
                   <span>{chat.latestMessage ? chat.latestMessage.sender.name : "No Sender"}</span>
@@ -73,7 +75,7 @@ function ChatPage() {
         </div>
         <div className={styles.right}>
           {selectedChat ? (
-            <Right /> 
+            <Right/> 
           ) : (
             <div style={{ display: 'flex', padding: "20px" }}>
               Select a chat to start messaging
