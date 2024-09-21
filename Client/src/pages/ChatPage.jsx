@@ -73,7 +73,7 @@ function ChatPage() {
         </div>
         <div className={styles.right}>
           {selectedChat ? (
-            <Right selectedChat={selectedChat} setChats={setChats} chats={chats} /> 
+            <Right /> 
           ) : (
             <div style={{ display: 'flex', padding: "20px" }}>
               Select a chat to start messaging

@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./../models/User');  // Import your User model
 const Message = require('./../models/MessageModel');  // Assuming this is your Message model
 const Chat = require('./../models/ChatModel');  // Assuming you have a Chat model
-
+const ChatUser = require('./../models/ChatUser');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';  // You should store this in a secure place, like environment variables
 
@@ -15,6 +15,15 @@ const socketSetup = (server) => {
       methods: ["GET", "POST"]
     }
   });
+
+  const resetUnseenCount = async (userId, chatId) => {
+    await ChatUser.findOneAndUpdate(
+      { User_id: userId, Chat_id: chatId },
+      { unseen_count: 0 }, // Reset unseen count to 0 for this user
+      { new: true }
+    );
+  };
+  
 
   const activeUsers = new Map();  
 
@@ -52,16 +61,35 @@ const socketSetup = (server) => {
     console.log('A user connected:', socket.id, 'User ID:', socket.user._id);
 
     // Handle room joining
-    socket.on('joinRoom', ({ roomId }) => {
+    socket.on('joinRoom', async ({ roomId }) => {
+      // Join the specified room
       socket.join(roomId);
-      console.log(`User with ID: ${socket.user._id} joined room: ${roomId}`);
+      const userId = socket.user._id;
+    
+      // Retrieve the latest message in the room
+      const latestMessage = await Message.findOne({ chat: roomId }).sort({ createdAt: -1 });
+    
+      if (latestMessage) {
+        // Update the last seen message ID for the user in ChatUser collection
+        await ChatUser.findOneAndUpdate(
+          { User_id: userId, Chat_id: roomId },
+          { 
+            $set: { last_seen_message_id: latestMessage._id,
+              unseen_count: 0
+             }, // Update to the latest message
+          },
+          { new: true, upsert: true } // Create if it doesn't exist
+        );
+      }
+    
+      console.log(`User with ID: ${userId} joined room: ${roomId}`);
     });
 
     // Handle sending a message
-    socket.on('sendMessage', async({ roomId, message }) => {
-      const userId = socket.user._id;  // Get the user ID from the socket object
+    socket.on('sendMessage', async ({ roomId, message }) => {
+      const userId = socket.user._id; // Sender's user ID
       console.log(`Message from user ${userId}: ${message}`);
-
+    
       try {
         // Create and save the message to the database
         const newMessage = await Message.create({
@@ -69,22 +97,69 @@ const socketSetup = (server) => {
           content: message,
           chat: roomId,
         });
+    
         // Populate the sender details for the response
         const fullMessage = await newMessage.populate('sender');
-
-        // Update the latest message in the chat
-        await Chat.findByIdAndUpdate(roomId, {
+    
+        // Update the latest message in the chat and get the chat document
+        const chat = await Chat.findByIdAndUpdate(roomId, {
           latestMessage: fullMessage,
-        });
+        }, { new: true }); // Return the updated chat document
+    
+        // Extract user IDs directly from the chat document
+        const chatUsers = chat.users;
+    
+        // Increment unseen count for all users except the sender
+        for (const chatUserId of chatUsers) {
+          if (chatUserId.toString() !== userId.toString()) {
+            // Increment unseen count for other users
+            const updatedChatUser = await ChatUser.findOneAndUpdate(
+              { User_id: chatUserId, Chat_id: roomId },
+              { $inc: { unseen_count: 1 } }, // Increment unseen_count by 1
+              { new: true, upsert: true } // Create a document if it doesn't exist
+            );
+            fullMessage.unseen_count = updatedChatUser.unseen_count;
 
+          }
+        }
+    
         // Emit the message to the room
         io.to(roomId).emit('receiveMessage', fullMessage);
-      }
-      catch(error){
+      } catch (error) {
         console.error('Error saving message:', error);
       }
     });
-
+    
+    socket.on('messageSeen', async ({ messageId }) => {
+      const userId = socket.user._id;
+      
+      // Find the message by ID
+      const message = await Message.findById(messageId);
+      
+      // Check if the message exists
+      if (!message) {
+        console.error('Message not found');
+        return;
+      }
+    
+      // Update the readBy field in the message
+      if (!message.readBy.includes(userId)) {
+        message.readBy.push(userId); // Add the user to the readBy array
+        await message.save(); // Save the updated message
+      }
+    
+      // Find the chat associated with the message
+      const chatId = message.chat;
+    
+      // Update the unseen count in ChatUser for the user in that chat
+      const chatUser = await ChatUser.findOne({ User_id: userId, Chat_id: chatId });
+      
+      if (chatUser && chatUser.unseen_count > 0) {
+        chatUser.unseen_count -= 1; // Decrease the unseen count
+        await chatUser.save(); // Save the updated count
+      }
+    });
+    
     // Handle disconnection
     socket.on('disconnect', async () => {
       const userId = activeUsers.get(socket.id);  // Get the userId based on socket.id
