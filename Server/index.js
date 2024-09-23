@@ -25,6 +25,8 @@ app.use('/secureRoute',AuthMiddleware,SecureRoutes)
 
 const server = app.listen(3000,()=>{
     console.log("server is running on port",3000)
+    console.log(`Process ID: ${process.pid}`); // Get the process ID
+
 })
 
 socketSetup(server);

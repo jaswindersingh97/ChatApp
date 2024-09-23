@@ -125,6 +125,7 @@ const socketSetup = (server) => {
     
         // Emit the message to the room
         io.to(roomId).emit('receiveMessage', fullMessage);
+        console.log("full message", fullMessage)
       } catch (error) {
         console.error('Error saving message:', error);
       }
