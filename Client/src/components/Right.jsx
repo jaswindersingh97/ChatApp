@@ -115,15 +115,17 @@ function Right() {
       >
         {chats.length > 0 ? (
           chats.map((item, index) => (
+            <>
+              {unseenCount > 0 && index === chats.length - unseenCount && <h1 className={style.newMessage}>New Messages</h1>}
             <div
               key={index}
               ref={unseenCount > 0 && index === chats.length - unseenCount ? firstUnseenMessageRef : null} // Ref to first unseen message
               className={`${style.element} ${item.sender._id === currentUserId ? style.sent : style.received}`}
             >
-              {unseenCount > 0 && index === chats.length - unseenCount && <h1>New Messages</h1>}
               <p>{item.content}</p>
               <span>{formatDate(item.updatedAt)}</span>
               </div>
+              </>
           ))
         ) : (
           <p>No messages yet</p>

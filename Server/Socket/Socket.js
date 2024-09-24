@@ -118,8 +118,7 @@ const socketSetup = (server) => {
               { $inc: { unseen_count: 1 } }, // Increment unseen_count by 1
               { new: true, upsert: true } // Create a document if it doesn't exist
             );
-            fullMessage.unseen_count = updatedChatUser.unseen_count;
-
+            fullMessage.unseen_count += updatedChatUser.unseen_count;
           }
         }
     

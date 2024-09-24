@@ -83,3 +83,11 @@
     opacity: 0.7;
 }
 
+.newMessage{
+    text-align: center;
+    width: 80%;
+    padding-block: 10px;
+    background-color:rgba(242, 213, 171, 0.7) ;
+    border-radius: 10px;
+    align-self: center;
+}

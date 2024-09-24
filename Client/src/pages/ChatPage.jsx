@@ -60,14 +60,13 @@ function ChatPage() {
                 key={chat._id} 
                 onClick={() => selectChat(prevChatsName[index])} 
                 className={`${styles.ele} ${chat._id === selectedChat._id && styles.selected }`}>
-
                 <h2>{prevChatsName[index] ? prevChatsName[index].name : 'Loading...'}</h2>
                 <div>
                   <span>{chat.latestMessage ? chat.latestMessage.sender.name : "No Sender"}</span>
                   <p>{chat.latestMessage ? chat.latestMessage.content : "No messages yet"}</p>
                 </div>
                 <div className={styles.unseenCounter}>
-                  <span>{chat.unseen_count}</span>
+                  {chat.unseen_count>0 && <span>{chat.unseen_count}</span>}
                 </div>
               </div>
             ))}
