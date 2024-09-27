@@ -41,6 +41,18 @@ function ChatPage() {
       // if (data && data.chat === _id) {
         // setPrevChats((prevChats) => [data,...prevChats]); // Append the new message
       // }
+      const updatePrevChats = (updatedChat) => {
+        setPrevChats(prevChats => {
+          // Remove the existing chat using the chat ID
+          const filteredChats = prevChats.filter(chat => chat._id !== updatedChat._id);
+          
+          // Return a new array with the updated chat added back
+          return [updatedChat,...filteredChats ];
+        });
+      };
+      updatePrevChats(data);
+
+      
       console.log(prevChats)
       console.log(data);
     };
