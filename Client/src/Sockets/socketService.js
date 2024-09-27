@@ -59,6 +59,23 @@ export const removeMessageListener = (callback) => {
   }
 };
 
+export const onNewMessage = (callback) => {
+  if (socket) {
+    socket.on('updatelist', callback);
+  } else {
+    console.error('Socket not connected');
+  }
+};
+
+// Function to remove the message listener
+export const removeNewMessage = (callback) => {
+  if (socket) {
+    socket.off('updatelist', callback);
+  } else {
+    console.error('Socket not connected');
+  }
+};
+
 // Function to disconnect from the socket
 export const disconnectSocket = () => {
   if (socket) {

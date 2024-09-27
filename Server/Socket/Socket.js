@@ -57,13 +57,20 @@ const socketSetup = (server) => {
       });
     });
 
-  io.on('connection', (socket) => {
+  io.on('connection', async(socket) => {
+    
+    const roomsId = await Chat.find({users:{$in : [socket.user._id] }}).select("_id");
+    await roomsId.forEach(element => {
+      socket.join(element._id.toString());
+    });
+    await console.log("rooms joined")
     console.log('A user connected:', socket.id, 'User ID:', socket.user._id);
+    // console.log('rooms which users is part of are:',roomsId);
 
     // Handle room joining
     socket.on('joinRoom', async ({ roomId }) => {
       // Join the specified room
-      socket.join(roomId);
+      // socket.join(roomId);
       const userId = socket.user._id;
     
       // Retrieve the latest message in the room
@@ -101,10 +108,10 @@ const socketSetup = (server) => {
         // Populate the sender details for the response
         const fullMessage = await newMessage.populate('sender');
     
-        // Update the latest message in the chat and get the chat document
+        // Update the latest message in the chat
         const chat = await Chat.findByIdAndUpdate(roomId, {
           latestMessage: fullMessage,
-        }, { new: true }); // Return the updated chat document
+        }, { new: true });
     
         // Extract user IDs directly from the chat document
         const chatUsers = chat.users;
@@ -113,23 +120,26 @@ const socketSetup = (server) => {
         for (const chatUserId of chatUsers) {
           if (chatUserId.toString() !== userId.toString()) {
             // Increment unseen count for other users
-            const updatedChatUser = await ChatUser.findOneAndUpdate(
+            await ChatUser.findOneAndUpdate(
               { User_id: chatUserId, Chat_id: roomId },
-              { $inc: { unseen_count: 1 } }, // Increment unseen_count by 1
-              { new: true, upsert: true } // Create a document if it doesn't exist
+              { $inc: { unseen_count: 1 } },
+              { new: true, upsert: true }
             );
-            fullMessage.unseen_count += updatedChatUser.unseen_count;
           }
         }
     
         // Emit the message to the room
         io.to(roomId).emit('receiveMessage', fullMessage);
-        console.log("full message", fullMessage)
+    
+        // Emit the updated chat list (with unseen counts attached) to the room
+        io.to(roomId).emit('updatelist', chat);
+    
+        console.log("full message", fullMessage);
       } catch (error) {
         console.error('Error saving message:', error);
       }
     });
-    
+        
     socket.on('messageSeen', async ({ messageId }) => {
       const userId = socket.user._id;
       

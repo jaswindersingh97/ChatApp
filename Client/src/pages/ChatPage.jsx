@@ -4,7 +4,7 @@ import SearchOverlay from '../components/SearchOverlay';
 import Right from '../components/Right';
 import CreateGroup from './../components/CreateGroup';
 import { useAuth } from '../context/AuthContext';
-import { connectSocket, disconnectSocket, joinRoom } from '../Sockets/socketService'; 
+import { connectSocket, disconnectSocket, joinRoom,onNewMessage ,removeNewMessage} from '../Sockets/socketService'; 
 
 function ChatPage() {
   const {
@@ -16,6 +16,7 @@ function ChatPage() {
     fetchChats, // method to load the prevchats
     prevChats, // state to load prevChats without sender name in one to one chat
     prevChatsName, // state to load prevChatsname with sender name in one to one chat
+    setPrevChats,
     chats, 
     setChats,
     showGroup, 
@@ -26,13 +27,30 @@ function ChatPage() {
     fetchChats(); 
   }, [searchVisible]);
 
-
+  
   useEffect(() => { // Connect the socket connection
     connectSocket('http://localhost:3000', token); // Pass token to connectSocket
     return () => {
       disconnectSocket(); // Clean up on unmount
     };
   }, [token]);
+
+  useEffect(()=>{
+    const handleChat = (data) => {
+      // Ensure the message is for the currently selected chat
+      // if (data && data.chat === _id) {
+        // setPrevChats((prevChats) => [data,...prevChats]); // Append the new message
+      // }
+      console.log(prevChats)
+      console.log(data);
+    };
+
+    onNewMessage(handleChat);
+    return () => {
+      removeNewMessage(handleChat); // Remove the listener
+    };
+  })
+
 
   const selectChat = ({ _id, name }) => {
     setSelectedChat({ _id, name });

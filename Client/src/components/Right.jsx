@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Fragment } from 'react';
 import senticon from './../assets/senticon.png';
 import style from './Right.module.css';
 import getMessage from '../api/getMessage';
@@ -66,6 +66,7 @@ function Right() {
       if (data && data.chat === _id) {
         setChats((prevChats) => [...prevChats, data]); // Append the new message
         scrollToPosition(); // Scroll to bottom when a new message is received
+        setUnseenCount(0); // Clear unseen count after a new message is received
       }
     };
 
@@ -91,6 +92,7 @@ function Right() {
     try {
       sendMessage(_id, message); // Send message via socket
       setMessage(""); // Clear input after sending
+      setUnseenCount(0); // Clear unseen count after sending a message
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -115,17 +117,17 @@ function Right() {
       >
         {chats.length > 0 ? (
           chats.map((item, index) => (
-            <>
+            <Fragment 
+            key={index}> {/* Moved key to Fragment */}
               {unseenCount > 0 && index === chats.length - unseenCount && <h1 className={style.newMessage}>New Messages</h1>}
-            <div
-              key={index}
-              ref={unseenCount > 0 && index === chats.length - unseenCount ? firstUnseenMessageRef : null} // Ref to first unseen message
-              className={`${style.element} ${item.sender._id === currentUserId ? style.sent : style.received}`}
-            >
-              <p>{item.content}</p>
-              <span>{formatDate(item.updatedAt)}</span>
+              <div
+                ref={unseenCount > 0 && index === chats.length - unseenCount ? firstUnseenMessageRef : null} // Ref to first unseen message
+                className={`${style.element} ${item.sender._id === currentUserId ? style.sent : style.received}`}
+              >
+                <p>{item.content}</p>
+                <span>{formatDate(item.updatedAt)}</span>
               </div>
-              </>
+            </Fragment>
           ))
         ) : (
           <p>No messages yet</p>
