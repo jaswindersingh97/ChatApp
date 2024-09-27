@@ -127,12 +127,13 @@ const socketSetup = (server) => {
             );
           }
         }
+        console.log("insende message")
     
         // Emit the message to the room
         io.to(roomId).emit('receiveMessage', fullMessage);
     
         // Emit the updated chat list (with unseen counts attached) to the room
-        io.to(roomId).emit('updatelist', chat);
+        io.to(roomId).emit('updatelist', chat.populate("latestMessage users"));
     
         console.log("full message", fullMessage);
       } catch (error) {

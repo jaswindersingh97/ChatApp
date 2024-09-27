@@ -21,3 +21,7 @@
 ## OPTIONAL
 
 1. Add support for sending and displaying images, videos, and documents within messages.    --can be done after the basic implementation
+
+## FinalChangesLeft
+
+1. adding the count to each and every message. moreover rendering it  correctly.
