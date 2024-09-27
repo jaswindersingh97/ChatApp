@@ -76,3 +76,18 @@
 .ele span{
     font-weight: bold;
 }
+.unseenCounter{
+    place-self: end;
+}
+.unseenCounter span{
+    color: rgb(8, 8, 8);
+    background: green;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    text-align: center;
+    place-content: center;
+}
+.selected{
+    background-color: rgb(137, 184, 132);
+}

@@ -4,7 +4,7 @@ import SearchOverlay from '../components/SearchOverlay';
 import Right from '../components/Right';
 import CreateGroup from './../components/CreateGroup';
 import { useAuth } from '../context/AuthContext';
-import { connectSocket, disconnectSocket, joinRoom } from '../Sockets/socketService'; 
+import { connectSocket, disconnectSocket, joinRoom,onNewMessage ,removeNewMessage} from '../Sockets/socketService'; 
 
 function ChatPage() {
   const {
@@ -14,24 +14,55 @@ function ChatPage() {
     selectedChat, // state to select chat
     setSelectedChat, // setstate to select chat
     fetchChats, // method to load the prevchats
-    prevChats, // state to load prevChats
-    prevChatsName, // state to load prevChatsname
+    prevChats, // state to load prevChats without sender name in one to one chat
+    prevChatsName, // state to load prevChatsname with sender name in one to one chat
+    setPrevChats,
     chats, 
     setChats,
     showGroup, 
     setShowGroup
   } = useAuth(); // Access currentUserId from auth context
-    
+ 
   useEffect(() => { // Fetch chat group names from API on load
     fetchChats(); 
   }, [searchVisible]);
 
+  
   useEffect(() => { // Connect the socket connection
     connectSocket('http://localhost:3000', token); // Pass token to connectSocket
     return () => {
       disconnectSocket(); // Clean up on unmount
     };
   }, [token]);
+
+  useEffect(()=>{
+    const handleChat = (data) => {
+      // Ensure the message is for the currently selected chat
+      // if (data && data.chat === _id) {
+        // setPrevChats((prevChats) => [data,...prevChats]); // Append the new message
+      // }
+      const updatePrevChats = (updatedChat) => {
+        setPrevChats(prevChats => {
+          // Remove the existing chat using the chat ID
+          const filteredChats = prevChats.filter(chat => chat._id !== updatedChat._id);
+          
+          // Return a new array with the updated chat added back
+          return [updatedChat,...filteredChats ];
+        });
+      };
+      updatePrevChats(data);
+
+      
+      console.log(prevChats)
+      console.log(data);
+    };
+
+    onNewMessage(handleChat);
+    return () => {
+      removeNewMessage(handleChat); // Remove the listener
+    };
+  })
+
 
   const selectChat = ({ _id, name }) => {
     setSelectedChat({ _id, name });
@@ -58,11 +89,14 @@ function ChatPage() {
               <div 
                 key={chat._id} 
                 onClick={() => selectChat(prevChatsName[index])} 
-                className={styles.ele}>
+                className={`${styles.ele} ${chat._id === selectedChat._id && styles.selected }`}>
                 <h2>{prevChatsName[index] ? prevChatsName[index].name : 'Loading...'}</h2>
                 <div>
                   <span>{chat.latestMessage ? chat.latestMessage.sender.name : "No Sender"}</span>
                   <p>{chat.latestMessage ? chat.latestMessage.content : "No messages yet"}</p>
+                </div>
+                <div className={styles.unseenCounter}>
+                  {chat.unseen_count>0 && <span>{chat.unseen_count}</span>}
                 </div>
               </div>
             ))}
@@ -70,7 +104,7 @@ function ChatPage() {
         </div>
         <div className={styles.right}>
           {selectedChat ? (
-            <Right selectedChat={selectedChat} setChats={setChats} chats={chats} /> 
+            <Right/> 
           ) : (
             <div style={{ display: 'flex', padding: "20px" }}>
               Select a chat to start messaging

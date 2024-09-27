@@ -40,7 +40,6 @@ export const AuthProvider = ({ children }) => {
       console.error('Error fetching previous chats:', error);
     }
   };
-
   
   // Function to get chat names based on whether it's a group chat or one-on-one
   const generateChatNames = (array) => {

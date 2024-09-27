@@ -2,6 +2,8 @@ const Chat = require('../models/ChatModel');
 const User = require('./../models/User');
 const Message = require('./../models/MessageModel');
 
+const SyncUnseenCount = require('./../utils/SyncUnseenCount');
+const ChatUser = require('../models/ChatUser');
 const searchUser = async (req, res) => {
     const { query } = req.query; // Extract the query from URL query string
     const userId = req.user._id; // Assuming the user ID is stored in req.user after authentication
@@ -106,26 +108,45 @@ const getChat = async (req, res) => {
 
 const Chats = async (req, res) => {
     try {
-      const result = await Chat.find({
+      // Fetch chats for the user
+      const chats = await Chat.find({
         users: { $elemMatch: { $eq: req.user._id } }
-      }).populate("users")
-        .populate("groupAdmin")
+      })
+      .populate("users groupAdmin")
         .populate({
             path: 'latestMessage', // Populate the latestMessage field
             populate: { 
               path: 'sender' // Nested populate for sender inside latestMessage
             }
         })
-        .sort({updatedAt:-1});
-        
-      res.status(200).send(result);
+      .sort({ updatedAt: -1 });
+  
+      // Fetch unseen counts for the user
+      const unseenCounts = await ChatUser.find({ User_id: req.user._id });
+  
+      // Create a map of unseen counts
+      const unseenCountMap = {};
+      unseenCounts.forEach(({ Chat_id, unseen_count }) => {
+        unseenCountMap[Chat_id.toString()] = unseen_count; // Convert ObjectId to string for easy comparison
+      });
+  
+      // Combine chats with their unseen counts
+      const result = chats.map(chat => ({
+        ...chat.toObject(), // Convert Mongoose document to plain object
+        unseen_count: unseenCountMap[chat._id.toString()] || 0 // Default to 0 if not found
+      }));
+  
+      // Return the combined result
+      res.status(200).json(result);
     } catch (error) {
+      console.error("Error fetching chats:", error);
       res.status(400).json({
-        message: "Error something went wrong in chats",
+        message: "Error: something went wrong in chats",
         error: error.message
       });
     }
   };
+  
   
   const createGroupChat = async (req, res) => {
     if (!req.body.users || !req.body.name) {
@@ -274,4 +295,27 @@ const getMessages = async (req,res) =>{
     }
 }
 
-module.exports = { searchUser ,Users ,getChat ,Chats,createGroupChat,renameGrp,addMembers,removeMember,createMessage,getMessages};
+const UnseenCounterSync = async(req, res)=>{
+    SyncUnseenCount();
+    res.status(200).json("excuted");
+}
+const UnseenCount = async (req, res) => {
+    const userId = req.user._id;
+  
+    try {
+      // Fetch the unseen counts for the user
+      const data = await ChatUser.find({ User_id: userId }); // Ensure the field name matches your schema
+      console.log(userId);
+      // Check if data is found
+      if (!data) {
+        return res.status(404).json({ message: "No unseen counts found for this user." });
+      }
+      // Return the unseen counts
+      res.status(200).json(data);
+    } catch (error) {
+      console.error("Error fetching unseen counts:", error);
+      res.status(500).json({ message: "An error occurred while fetching unseen counts.", error: error.message });
+    }
+  };
+
+module.exports = { searchUser, Users, getChat, Chats, createGroupChat, renameGrp, addMembers, removeMember, createMessage, getMessages, UnseenCounterSync, UnseenCount};
