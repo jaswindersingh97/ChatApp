@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './SignIn.module.css';
+import styles from './Signin.module.css';
 import authApi from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
