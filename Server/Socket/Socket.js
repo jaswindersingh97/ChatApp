@@ -70,7 +70,7 @@ const socketSetup = (server) => {
     // Handle room joining
     socket.on('joinRoom', async ({ roomId }) => {
       // Join the specified room
-      // socket.join(roomId);
+      socket.join(roomId);
       const userId = socket.user._id;
     
       // Retrieve the latest message in the room
