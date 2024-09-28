@@ -4,6 +4,10 @@
 
 <p id="description">A Simple and Efficient Real-Time Messaging Platform Built with MERN</p>
 
+<h2>🚀 Demo</h2>
+
+[https://chat-app-rouge-nine.vercel.app/](https://chat-app-rouge-nine.vercel.app/)
+
   
   
 <h2>🧐 Features</h2>
