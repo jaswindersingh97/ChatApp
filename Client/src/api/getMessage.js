@@ -4,7 +4,7 @@ const getMessage = async ({chatId,token}) => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: 'http://localhost:3000/secureRoute/getMessages/'+chatId,
+            url: `${import.meta.env.VITE_API_URL}/secureRoute/getMessages/`+chatId,
             headers: {
                 'Authorization': token,
              },

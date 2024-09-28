@@ -8,7 +8,7 @@ async function createChatApi({ token, _id }) {
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: 'http://localhost:3000/secureRoute/chat/',
+    url: `${import.meta.env.VITE_API_URL}/secureRoute/chat/`,
     headers: { 
       Authorization: token,
       'Content-Type': 'application/json'

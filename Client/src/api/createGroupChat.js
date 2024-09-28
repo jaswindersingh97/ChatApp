@@ -10,7 +10,7 @@ async function createGroupChat({ users, groupName, token }) {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: 'http://localhost:3000/secureRoute/gChat',
+            url: `${import.meta.env.VITE_API_URL}/secureRoute/gChat`,
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': token

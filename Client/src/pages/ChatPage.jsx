@@ -29,7 +29,7 @@ function ChatPage() {
 
   
   useEffect(() => { // Connect the socket connection
-    connectSocket('http://localhost:3000', token); // Pass token to connectSocket
+    connectSocket(import.meta.env.VITE_API_URL, token); // Pass token to connectSocket
     return () => {
       disconnectSocket(); // Clean up on unmount
     };

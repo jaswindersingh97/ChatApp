@@ -5,7 +5,7 @@ const SearchUsersApi = async ({ token, search }) => {
     const config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: `http://localhost:3000/secureRoute/search/?query=${search}`,
+      url: `${import.meta.env.VITE_API_URL}/secureRoute/search/?query=${search}`,
       headers: { 
         'Authorization': `${token}` // Ensure the token is properly formatted
       }

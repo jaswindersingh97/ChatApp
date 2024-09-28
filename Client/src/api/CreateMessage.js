@@ -9,7 +9,7 @@ const CreateMessage =async ({token,message,_id})=> {
           let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: 'http://localhost:3000/secureRoute/createMessage',
+            url: `${import.meta.env.VITE_API_URL}/secureRoute/createMessage`,
             headers: { 
               'Content-Type': 'application/json', 
               'Authorization': token
