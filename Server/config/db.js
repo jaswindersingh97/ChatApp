@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // MongoDB connection URI
-const uri = process.env.MONGO_URI || 'mongodb+srv://admin:admin@cluster0.v9ar9.mongodb.net/chatapp'; // Use environment variable or fallback to local
+const uri = process.env.MONGO_URI ; // Use environment variable or fallback to local
 console.log(uri)
 const connectDB = async () => {
     try {

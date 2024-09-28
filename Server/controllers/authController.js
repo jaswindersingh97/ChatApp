@@ -68,7 +68,7 @@ const signin = async (req, res) => {
         const token = jwt.sign(
             { _id: user._id, userName: user.name, email: user.email },  // Payload data
             JWT_SECRET,  // Secret key
-            { expiresIn: '3h' }  // Token expiration time
+            { expiresIn: '24h' }  // Token expiration time
         );
 
         // Send back the token and user details

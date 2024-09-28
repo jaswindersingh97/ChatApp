@@ -11,7 +11,7 @@ const socketSetup = (server) => {
   const io = new Server(server, {
     pingTimeout: 60000,
     cors: {
-      origin: "http://localhost:5173", // Adjust this to your front-end URL
+      origin: process.env.CLIENT_URL, // Adjust this to your front-end URL
       methods: ["GET", "POST"]
     }
   });

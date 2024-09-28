@@ -7,12 +7,13 @@ const app=express();
 const connectDB = require('./config/db'); 
 const socketSetup = require('./Socket/Socket');
 
+const port = process.env.PORT || 3000;
 require('dotenv').config();
 connectDB();
 app.use(express.json())
 // app.use(cors());
 app.use(cors({
-    origin: 'http://localhost:5173'  // Allow only requests from this URL
+    origin: process.env.CLIENT_URL   // Allow only requests from this URL
 }));
 
 
@@ -23,8 +24,8 @@ app.use('/auth', authRoutes);
 
 app.use('/secureRoute',AuthMiddleware,SecureRoutes)
 
-const server = app.listen(3000,()=>{
-    console.log("server is running on port",3000)
+const server = app.listen(port,()=>{
+    console.log("server is running on port",port)
     console.log(`Process ID: ${process.pid}`); // Get the process ID
 
 })
