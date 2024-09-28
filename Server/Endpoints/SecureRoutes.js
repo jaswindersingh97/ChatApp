@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { searchUser, Users, getChat, Chats, UnseenCount, createGroupChat, renameGrp, addMembers, removeMember, UnseenCounterSync, createMessage, getMessages} = require('./../controllers/SecureController')
+const { searchUser, Users, getChat, Chats, UnseenCount, createGroupChat, renameGrp, addMembers, removeMember, UnseenCounterSync, createMessage, getMessages, seenChat} = require('./../controllers/SecureController')
 
 router.get('/search', searchUser); //Searching the users
 router.get('/users', Users); //getting all the users
@@ -14,6 +14,8 @@ router.put("/addMembers",addMembers); //add a member to group
 router.delete("/removeMember",removeMember); //remove a group
 
 router.get("/UnseenCounterSync",UnseenCounterSync)
+
+router.post("/seenChat",seenChat);
 
 router.post("/createMessage", createMessage); //to create a message 
 router.get("/getMessages/:chatId",getMessages); // to get messages from chat

@@ -75,7 +75,6 @@ function ChatPage() {
       <div className={styles.header}>
         <button onClick={toggleSearch}>SearchBar</button>
         <h1>ChatApp</h1>
-        <button>Notification</button>
         <button>Profile</button>
       </div>
       <div className={styles.body}>

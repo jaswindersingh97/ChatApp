@@ -318,4 +318,15 @@ const UnseenCount = async (req, res) => {
     }
   };
 
-module.exports = { searchUser, Users, getChat, Chats, createGroupChat, renameGrp, addMembers, removeMember, createMessage, getMessages, UnseenCounterSync, UnseenCount};
+  const seenChat = async(req,res) =>{
+    const {chatId} = req.body;
+    const userId = req.user._id;
+
+  await ChatUser.updateOne(
+        {ChatId:chatId,UserId:userId},
+        {$set:{unseen_count:0}})
+        await res.status(200).json("updated successfully")
+  }
+
+
+module.exports = { searchUser, Users, getChat, Chats, createGroupChat, renameGrp, addMembers, removeMember, createMessage, getMessages, UnseenCounterSync, UnseenCount, seenChat};
