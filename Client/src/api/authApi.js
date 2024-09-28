@@ -5,7 +5,7 @@ function authApi({ endpoints, user }) {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: `${import.meta.env.VITE_API_URL}/auth${endpoints}`,  // Dynamically include endpoint
+      url: `${import.meta.env.VITE_API_URL}auth${endpoints}`,  // Dynamically include endpoint
       headers: { 
         'Content-Type': 'application/json'
       },
