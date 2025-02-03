@@ -8,28 +8,28 @@ import { connectSocket, disconnectSocket, joinRoom,onNewMessage ,removeNewMessag
 
 function ChatPage() {
   const {
-    token,  // token from localstorage
-    searchVisible,  // state to show / hide search new chat
-    toggleSearch, // hide show search new chat
-    selectedChat, // state to select chat
-    setSelectedChat, // setstate to select chat
-    fetchChats, // method to load the prevchats
-    prevChats, // state to load prevChats without sender name in one to one chat
-    prevChatsName, // state to load prevChatsname with sender name in one to one chat
+    token,  
+    searchVisible,
+    toggleSearch, 
+    selectedChat, 
+    setSelectedChat,
+    fetchChats, 
+    prevChats,
+    prevChatsName,
     setPrevChats,
     chats, 
     setChats,
     showGroup, 
     setShowGroup
-  } = useAuth(); // Access currentUserId from auth context
+  } = useAuth(); 
  
-  useEffect(() => { // Fetch chat group names from API on load
+  useEffect(() => { 
     fetchChats(); 
   }, [searchVisible]);
 
   
-  useEffect(() => { // Connect the socket connection
-    connectSocket(import.meta.env.VITE_API_URL, token); // Pass token to connectSocket
+  useEffect(() => { 
+    connectSocket(import.meta.env.VITE_API_URL, token);
     return () => {
       disconnectSocket(); // Clean up on unmount
     };
@@ -37,36 +37,26 @@ function ChatPage() {
 
   useEffect(()=>{
     const handleChat = (data) => {
-      // Ensure the message is for the currently selected chat
-      // if (data && data.chat === _id) {
-        // setPrevChats((prevChats) => [data,...prevChats]); // Append the new message
-      // }
       const updatePrevChats = (updatedChat) => {
         setPrevChats(prevChats => {
-          // Remove the existing chat using the chat ID
           const filteredChats = prevChats.filter(chat => chat._id !== updatedChat._id);
-          
-          // Return a new array with the updated chat added back
           return [updatedChat,...filteredChats ];
         });
       };
       updatePrevChats(data);
-
-      
       console.log(prevChats)
       console.log(data);
     };
 
     onNewMessage(handleChat);
     return () => {
-      removeNewMessage(handleChat); // Remove the listener
+      removeNewMessage(handleChat);
     };
   })
 
-
   const selectChat = ({ _id, name }) => {
     setSelectedChat({ _id, name });
-    joinRoom(_id);  // Join the room when a chat is selected
+    joinRoom(_id);  
   };
 
   return (
@@ -81,7 +71,6 @@ function ChatPage() {
         <div className={styles.left}>
           <div className={styles.leftheader}>
             <p>MY CHATS</p>
-            <button onClick={() => setShowGroup(!showGroup)}>New Group chat +</button>
           </div>
           <div className={styles.leftbody}>
             {prevChats.map((chat, index) => (
@@ -112,7 +101,6 @@ function ChatPage() {
         </div>
       </div>
 
-      {showGroup && <CreateGroup />} {/* Show group creation form */}
     </div>
   );
 }

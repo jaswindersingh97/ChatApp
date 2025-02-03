@@ -15,42 +15,26 @@ const socketSetup = (server) => {
       methods: ["GET", "POST"]
     }
   });
-
-  const resetUnseenCount = async (userId, chatId) => {
-    await ChatUser.findOneAndUpdate(
-      { User_id: userId, Chat_id: chatId },
-      { unseen_count: 0 }, // Reset unseen count to 0 for this user
-      { new: true }
-    );
-  };
-  
-
   const activeUsers = new Map();  
 
-  // Middleware to authenticate and extract user info from token
     io.use((socket, next) => {
       const token = socket.handshake.auth.token?.replace(/^Bearer\s/, '');
-      // console.log(token)
       if (!token) {
         return next(new Error('Authentication error: Token missing'));
       }
 
-      // Verify the token
       jwt.verify(token, JWT_SECRET, async (err, decoded) => {
         if (err) {
           return next(new Error('Authentication error: Invalid token'));
         }
 
-        // Attach user info to the socket object for further use
-        socket.user = decoded;  // Assuming the token payload contains _id
+        socket.user = decoded;
 
         try {
-          // Update user as active in the database
           await User.findByIdAndUpdate(socket.user._id, { isActive: true });
 
-          // Add the user to activeUsers map
           activeUsers.set(socket.id, socket.user._id);
-          next();  // Proceed to connection event
+          next();  
         } catch (error) {
           next(new Error('Database error: Unable to update user status'));
         }
@@ -63,27 +47,21 @@ const socketSetup = (server) => {
     await roomsId.forEach(element => {
       socket.join(element._id.toString());
     });
-    await console.log("rooms joined")
+    console.log("rooms joined")
     console.log('A user connected:', socket.id, 'User ID:', socket.user._id);
-    // console.log('rooms which users is part of are:',roomsId);
 
-    // Handle room joining
     socket.on('joinRoom', async ({ roomId }) => {
-      // Join the specified room
-      // socket.join(roomId);
       const userId = socket.user._id;
     
-      // Retrieve the latest message in the room
       const latestMessage = await Message.findOne({ chat: roomId }).sort({ createdAt: -1 });
     
       if (latestMessage) {
-        // Update the last seen message ID for the user in ChatUser collection
         await ChatUser.findOneAndUpdate(
           { User_id: userId, Chat_id: roomId },
           { 
             $set: { last_seen_message_id: latestMessage._id,
               unseen_count: 0
-             }, // Update to the latest message
+             }, 
           },
           { new: true, upsert: true } // Create if it doesn't exist
         );
@@ -92,8 +70,6 @@ const socketSetup = (server) => {
       console.log(`User with ID: ${userId} joined room: ${roomId}`);
     });
 
-    // Handle sending a message
-// Handle sending a message
 socket.on('sendMessage', async ({ roomId, message }) => {
   const userId = socket.user._id; // Sender's user ID
   console.log(`Message from user ${userId}: ${message}`);

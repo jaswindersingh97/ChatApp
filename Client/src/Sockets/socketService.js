@@ -1,13 +1,11 @@
 import { io } from 'socket.io-client';
 
-let socket; // Declare socket without initializing
-
-// Function to connect the socket to the server
+let socket;
 export const connectSocket = (serverUrl, token) => {
   if (!socket) {
     socket = io(serverUrl, {
       auth: {
-        token: token, // Pass token for authentication
+        token: token, 
       },
     });
 
@@ -23,7 +21,6 @@ export const connectSocket = (serverUrl, token) => {
   return socket;
 };
 
-// Function to join a room
 export const joinRoom = (roomId) => {
   if (socket) {
     socket.emit('joinRoom', { roomId });
@@ -32,7 +29,6 @@ export const joinRoom = (roomId) => {
   }
 };
 
-// Function to send a message
 export const sendMessage = (roomId, message) => {
   if (socket) {
     socket.emit('sendMessage', { roomId, message });
@@ -41,7 +37,6 @@ export const sendMessage = (roomId, message) => {
   }
 };
 
-// Function to listen for messages
 export const onMessageReceived = (callback) => {
   if (socket) {
     socket.on('receiveMessage', callback);
@@ -50,7 +45,6 @@ export const onMessageReceived = (callback) => {
   }
 };
 
-// Function to remove the message listener
 export const removeMessageListener = (callback) => {
   if (socket) {
     socket.off('receiveMessage', callback);
@@ -67,7 +61,6 @@ export const onNewMessage = (callback) => {
   }
 };
 
-// Function to remove the message listener
 export const removeNewMessage = (callback) => {
   if (socket) {
     socket.off('updatelist', callback);
@@ -76,7 +69,6 @@ export const removeNewMessage = (callback) => {
   }
 };
 
-// Function to disconnect from the socket
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();
