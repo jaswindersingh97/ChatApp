@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styles from './ChatPage.module.css';
 import SearchOverlay from '../components/SearchOverlay'; 
 import Right from '../components/Right';
-import CreateGroup from './../components/CreateGroup';
 import { useAuth } from '../context/AuthContext';
 import { connectSocket, disconnectSocket, joinRoom,onNewMessage ,removeNewMessage} from '../Sockets/socketService'; 
 
@@ -17,10 +16,6 @@ function ChatPage() {
     prevChats,
     prevChatsName,
     setPrevChats,
-    chats, 
-    setChats,
-    showGroup, 
-    setShowGroup
   } = useAuth(); 
  
   useEffect(() => { 
@@ -31,7 +26,7 @@ function ChatPage() {
   useEffect(() => { 
     connectSocket(import.meta.env.VITE_API_URL, token);
     return () => {
-      disconnectSocket(); // Clean up on unmount
+      disconnectSocket(); 
     };
   }, [token]);
 
@@ -44,8 +39,6 @@ function ChatPage() {
         });
       };
       updatePrevChats(data);
-      console.log(prevChats)
-      console.log(data);
     };
 
     onNewMessage(handleChat);

@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await getPrevChats({ token });
       setPrevChats(data);
-      // Generate chat names after fetching chats
       const chatNames = generateChatNames(data);
       setPrevChatsName(chatNames);
     } catch (error) {
@@ -41,7 +40,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  // Function to get chat names based on whether it's a group chat or one-on-one
   const generateChatNames = (array) => {
     return array.map((item) => {
       if (item.isGroupChat) {
